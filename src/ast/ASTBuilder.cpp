@@ -2,6 +2,7 @@
 
 std::any ASTBuilder::visitFormula(
     ModalParser::FormulaContext *ctx)
+    
 {
     return visit(ctx->implication());
 }

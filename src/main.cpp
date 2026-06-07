@@ -6,10 +6,15 @@
 
 using namespace antlr4;
 
-int main() 
+int main(int argc, const char* argv[]) 
 {
+    if (argc < 2) 
+    {
+        std::cerr << "Usage: " << argv[0] << " <input>" << std::endl;
+        return 1;
+    }
 
-    std::string input = "p & q";    
+    std::string input = argv[1];
 
     ANTLRInputStream stream(input);
     ModalLexer lexer(&stream);
@@ -22,10 +27,11 @@ int main()
 
     auto result = builder.visit(tree);
 
+    std::cout << "Input Text is: " << input << std::endl;
     std::cout << "Has value: " << result.has_value() << std::endl;
     std::cout << "Type: " << result.type().name() << std::endl; 
 
-    auto ast = std::any_cast<std::shared_ptr<Formula>>(builder.visit(tree));
+    auto ast = std::any_cast<std::shared_ptr<Formula>>(result);
 
     std::cout << "Parsing successful!" << input << std::endl;
 

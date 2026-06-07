@@ -1,0 +1,18 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Debug s5solver",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/s5solver",
+            "args": [
+                "p & q"
+            ],
+            "cwd": "${workspaceFolder}",
+            "MIMode": "gdb",
+            "stopAtEntry": false,
+            "externalConsole": false
+        }
+    ]
+}

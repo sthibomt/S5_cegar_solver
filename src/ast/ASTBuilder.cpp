@@ -11,20 +11,14 @@ std::any ASTBuilder::visitImplication(ModalParser::ImplicationContext *ctx)
 {
     if (ctx->IMPLIES())
     {
-        auto left =
-            std::any_cast<std::shared_ptr<Formula>>(
+        auto left = std::any_cast<std::shared_ptr<Formula>>(
                 visit(ctx->disjunction()));
 
-
-        auto right =
-            std::any_cast<std::shared_ptr<Formula>>(
+        auto right = std::any_cast<std::shared_ptr<Formula>>(
                 visit(ctx->implication()));
 
-
         return std::make_shared<BinaryFormula>(
-            FormulaType::IMPLIES,
-            left,
-            right);
+            FormulaType::IMPLIES, left, right);
     }
 
     return visit(ctx->disjunction());
@@ -33,13 +27,38 @@ std::any ASTBuilder::visitImplication(ModalParser::ImplicationContext *ctx)
 //---------------------------------------------------------------------------------
 std::any ASTBuilder::visitDisjunction(ModalParser::DisjunctionContext *ctx)
 {
-    return visit(ctx->conjunction(0));
+    auto result = std::any_cast<std::shared_ptr<Formula>>(
+            visit(ctx->conjunction(0)));
+
+    for (size_t i = 1; i < ctx->conjunction().size(); i++)
+    {
+        auto rhs = std::any_cast<std::shared_ptr<Formula>>(
+                visit(ctx->conjunction(i)));
+
+        result = std::make_shared<BinaryFormula>(
+                FormulaType::OR,result,rhs);
+    }
+
+    return result;
 }
 
 //---------------------------------------------------------------------------------
 std::any ASTBuilder::visitConjunction(ModalParser::ConjunctionContext *ctx)
 {
-    return visit(ctx->unary(0));
+    auto result =
+        std::any_cast<std::shared_ptr<Formula>>(
+            visit(ctx->unary(0)));
+
+    for (size_t i = 1; i < ctx->unary().size(); ++i)
+    {
+        auto rhs = std::any_cast<std::shared_ptr<Formula>>(
+                visit(ctx->unary(i)));
+
+        result = std::make_shared<BinaryFormula>(
+            FormulaType::AND, result, rhs);  
+            
+    }
+    return result;
 }
 
 //---------------------------------------------------------------------------------
@@ -50,7 +69,6 @@ std::any ASTBuilder::visitUnary(ModalParser::UnaryContext *ctx)
         return visit(ctx->atom());
     }
 
-
     if (ctx->NOT())
     {
         auto child =
@@ -59,8 +77,7 @@ std::any ASTBuilder::visitUnary(ModalParser::UnaryContext *ctx)
 
 
         return std::make_shared<UnaryFormula>(
-            FormulaType::NOT,
-            child);
+            FormulaType::NOT, child);
     }
 
     return visitChildren(ctx);
@@ -74,12 +91,8 @@ std::any ASTBuilder::visitModal(ModalParser::ModalContext *ctx)
         auto child =
             std::any_cast<std::shared_ptr<Formula>>(visit(ctx->unary()));
 
-
         std::shared_ptr<Formula> result = std::make_shared<ModalFormula>(
-                FormulaType::BOX,
-                -1,
-                child);
-
+                FormulaType::BOX, -1, child);
 
         return result;
     }
@@ -89,12 +102,8 @@ std::any ASTBuilder::visitModal(ModalParser::ModalContext *ctx)
         auto child = std::any_cast<std::shared_ptr<Formula>>(
                 visit(ctx->unary()));
 
-
         std::shared_ptr<Formula> result = std::make_shared<ModalFormula>(
-                FormulaType::DIAMOND,
-                -1,
-                child);
-
+                FormulaType::DIAMOND, -1, child);
 
         return result;
     }
@@ -106,9 +115,7 @@ std::any ASTBuilder::visitModal(ModalParser::ModalContext *ctx)
                 visit(ctx->unary()));
 
         std::shared_ptr<Formula> result = std::make_shared<ModalFormula>(
-                FormulaType::BOX,
-                agent,
-                child);
+                FormulaType::BOX, agent, child);
 
         return result;
     }
@@ -120,9 +127,7 @@ std::any ASTBuilder::visitModal(ModalParser::ModalContext *ctx)
                 visit(ctx->unary()));
 
         std::shared_ptr<Formula> result = std::make_shared<ModalFormula>(
-                FormulaType::DIAMOND,
-                agent,
-                child);
+                FormulaType::DIAMOND, agent, child);
 
         return result;
     }

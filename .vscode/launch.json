@@ -2,17 +2,15 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Debug s5solver",
+            "name": "Debug S5 Solver",
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/build/s5solver",
-            "args": [
-                "p & q"
-            ],
+            "args": ["p & q"],
             "cwd": "${workspaceFolder}",
-            "MIMode": "gdb",
             "stopAtEntry": false,
-            "externalConsole": false
+            "externalConsole": false,
+            "MIMode": "gdb"
         }
     ]
 }

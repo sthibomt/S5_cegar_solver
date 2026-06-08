@@ -7,14 +7,17 @@
 using namespace antlr4;
 
 int main(int argc, const char* argv[]) 
-{
-    if (argc < 2) 
-    {
-        std::cerr << "Usage: " << argv[0] << " <input>" << std::endl;
-        return 1;
-    }
+{   
+    std::string input;
 
-    std::string input = argv[1];
+    if (argc > 1)
+    {
+        input = argv[1];
+    }
+    else
+    {
+        input = "p -> q";   // default
+    }    
 
     ANTLRInputStream stream(input);
     ModalLexer lexer(&stream);

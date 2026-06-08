@@ -22,7 +22,7 @@ class Formula
     FormulaType type;
 
     explicit Formula(FormulaType t) : type(t) {}
-    virtual ~Formula() = default;
+    virtual ~Formula() = default; //
 };
 
 //---------------------------------------------------------------------------------

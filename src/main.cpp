@@ -16,7 +16,7 @@ int main(int argc, const char* argv[])
     }
     else
     {
-        input = "p -> q";   // default
+        input = "[1](p -> <2>q)";   // default
     }    
 
     ANTLRInputStream stream(input);

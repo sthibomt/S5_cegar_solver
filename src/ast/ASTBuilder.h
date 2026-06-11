@@ -13,6 +13,6 @@ public:
     std::any visitDisjunction(ModalParser::DisjunctionContext *ctx) override;
     std::any visitConjunction(ModalParser::ConjunctionContext *ctx) override;
     std::any visitUnary(ModalParser::UnaryContext *ctx) override;
-    std::any visitModal(ModalParser::ModalContext *ctx) override;
+    std::any visitModal(ModalParser::ModalContext *ctx) override;     
     std::any visitAtom(ModalParser::AtomContext *ctx) override;
 };

@@ -2,15 +2,13 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Debug S5 Solver",
+            "name": "Launch S5 Solver",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/build/s5solver",
-            "args": ["p & q"],
+            "program": "${command:cmake.launchTargetPath}",
+            "args": ["P & q"],
             "cwd": "${workspaceFolder}",
-            "stopAtEntry": false,
-            "externalConsole": false,
-            "MIMode": "gdb"
+            "MIMode": "gdb"        
         }
     ]
 }

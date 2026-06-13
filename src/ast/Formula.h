@@ -31,8 +31,7 @@ class AtomFormula : public Formula
     public:
     std::string name;
 
-    AtomFormula(const std::string& n)
-        : Formula(FormulaType::ATOM), name(n) {}
+    AtomFormula(const std::string& n) : Formula(FormulaType::ATOM), name(n) {}
 };
 
 //---------------------------------------------------------------------------------

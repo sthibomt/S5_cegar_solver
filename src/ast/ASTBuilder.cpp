@@ -53,10 +53,20 @@ std::any ASTBuilder::visitUnary(ModalParser::UnaryContext *ctx)
         return visit(ctx->atom());
     }
 
+    if (ctx->modal())
+    {
+        return visit(ctx->modal());
+    }
+
     if (ctx->NOT())
     {
         auto child = std::any_cast<std::shared_ptr<Formula>>(visit(ctx->unary()));
         return std::make_shared<UnaryFormula>(FormulaType::NOT, child);
+    }
+
+    if (ctx->implication())
+    {
+        return visit(ctx->implication());
     }
 
     return visitChildren(ctx);
@@ -95,7 +105,7 @@ std::any ASTBuilder::visitModal(ModalParser::ModalContext *ctx)
         return result;
     }
 
-    throw std::runtime_error("Unhandled modal node");
+    return visitChildren(ctx);
 }
 
 //---------------------------------------------------------------------------------

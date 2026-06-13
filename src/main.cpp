@@ -16,7 +16,7 @@ int main(int argc, const char* argv[])
     }
     else
     {
-        input = "[1](p -> <2>q)";   // default
+        input = "<2>(p & q)";   // default
     }    
 
     ANTLRInputStream stream(input);

@@ -35,7 +35,7 @@ int main(int argc, const char* argv[])
     std::cout << "Type: " << result.type().name() << std::endl; 
 
     auto ast = std::any_cast<std::shared_ptr<Formula>>(result);
-
+        
     std::cout << "Parsing successful!" << input << std::endl;
 
     return 0;

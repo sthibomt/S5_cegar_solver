@@ -3,6 +3,7 @@
 #include "parser/generated/ModalLexer.h"
 #include "parser/generated/ModalParser.h"
 #include "ast/ASTBuilder.h"
+#include "utils/ASTPrinter.h"
 
 using namespace antlr4;
 
@@ -35,7 +36,9 @@ int main(int argc, const char* argv[])
     std::cout << "Type: " << result.type().name() << std::endl; 
 
     auto ast = std::any_cast<std::shared_ptr<Formula>>(result);
-        
+    std::cout << "\nAST:\n";
+    PrintFormula(ast);
+
     std::cout << "Parsing successful!" << input << std::endl;
 
     return 0;

@@ -1,0 +1,9 @@
+{
+    "name": "Debug S5Solver",
+    "type": "cppdbg",
+    "request": "launch",
+    "program": "${command:cmake.launchTargetPath}",
+    "args": ["p -> q"],
+    "cwd": "${workspaceFolder}",
+    "MIMode": "gdb"
+}

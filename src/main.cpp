@@ -1,26 +1,27 @@
 #include <iostream>
-
 #include <antlr4-runtime/antlr4-runtime.h>
-
 #include "parser/generated/ModalLexer.h"
 #include "parser/generated/ModalParser.h"
-
 #include "ast/ASTBuilder.h"
 
 using namespace antlr4;
 
-int main() 
-{
+int main(int argc, const char* argv[]) 
+{   
+    std::string input;
 
-    std::string input = "[]p";
-    // std::string input ="[1](p -> <2>q)";
+    if (argc > 1)
+    {
+        input = argv[1];
+    }
+    else
+    {
+        input = "<2>(p & q)";   // default
+    }    
 
     ANTLRInputStream stream(input);
-
     ModalLexer lexer(&stream);
-
     CommonTokenStream tokens(&lexer);
-
     ModalParser parser(&tokens);
 
     auto tree = parser.formula();
@@ -29,14 +30,13 @@ int main()
 
     auto result = builder.visit(tree);
 
+    std::cout << "Input Text is: " << input << std::endl;
     std::cout << "Has value: " << result.has_value() << std::endl;
-
     std::cout << "Type: " << result.type().name() << std::endl; 
 
-    auto ast =   std::any_cast<std::shared_ptr<Formula>>(
-            builder.visit(tree));
-
-    std::cout << "Parsing successful!\n";
+    auto ast = std::any_cast<std::shared_ptr<Formula>>(result);
+        
+    std::cout << "Parsing successful!" << input << std::endl;
 
     return 0;
 }

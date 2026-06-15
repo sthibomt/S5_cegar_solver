@@ -24,9 +24,7 @@ void PrintFormula(const shared_ptr<Formula>& formula, int indent)
     {
         case FormulaType::ATOM:
         {
-            auto atom =
-                dynamic_pointer_cast<AtomFormula>(formula);
-
+            auto atom = dynamic_pointer_cast<AtomFormula>(formula);
             cout << Indent(indent) << "ATOM(" << atom->name << ")\n";
             break;
         }
@@ -35,7 +33,6 @@ void PrintFormula(const shared_ptr<Formula>& formula, int indent)
         {
             auto unary = dynamic_pointer_cast<UnaryFormula>(formula);
             cout << Indent(indent) << "NOT\n";
-
             PrintFormula(unary->child, indent + 1);
             break;
         }
@@ -44,7 +41,6 @@ void PrintFormula(const shared_ptr<Formula>& formula, int indent)
         {
             auto binary = dynamic_pointer_cast<BinaryFormula>(formula);
             cout << Indent(indent) << "AND\n";
-
             PrintFormula(binary->left, indent + 1);
             PrintFormula(binary->right, indent + 1);
             break;
@@ -54,7 +50,6 @@ void PrintFormula(const shared_ptr<Formula>& formula, int indent)
         {
             auto binary = dynamic_pointer_cast<BinaryFormula>(formula);
             cout << Indent(indent) << "OR\n";
-
             PrintFormula(binary->left, indent + 1);
             PrintFormula(binary->right, indent + 1);
             break;
@@ -72,14 +67,12 @@ void PrintFormula(const shared_ptr<Formula>& formula, int indent)
         case FormulaType::BOX:
         {
             auto modal = dynamic_pointer_cast<ModalFormula>(formula);
-
             cout << Indent(indent) << "BOX";
             if (modal->agent >= 0)
             {
                 cout << "[" << modal->agent << "]";
             }
             cout << "\n";
-
             PrintFormula(modal->child, indent + 1);
             break;
         }
@@ -87,15 +80,12 @@ void PrintFormula(const shared_ptr<Formula>& formula, int indent)
         case FormulaType::DIAMOND:
         {
             auto modal = dynamic_pointer_cast<ModalFormula>(formula);
-
             cout << Indent(indent) << "DIAMOND";
-
             if (modal->agent >= 0)
             {
                 cout << "<" << modal->agent << ">";
             }
             cout << "\n";
-
             PrintFormula(modal->child, indent + 1);
             break;
         }

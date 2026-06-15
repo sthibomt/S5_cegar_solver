@@ -69,5 +69,5 @@ Testing/
 .cache/
 
 # ANTLR generated files
-src/parser/generated/*.interp
-src/parser/generated/*.tokens
+# src/parser/generated/*.interp
+# src/parser/generated/*.tokens

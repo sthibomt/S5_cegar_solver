@@ -1,5 +1,5 @@
 {
-    "name": "Debug S5Solver",
+    "name": "Debug with CMake",
     "type": "cppdbg",
     "request": "launch",
     "program": "${command:cmake.launchTargetPath}",

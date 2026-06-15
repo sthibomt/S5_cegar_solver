@@ -8,7 +8,4 @@ CEGAR-Tableau based SAT solver optimized for S5 and extended to S5n.
 
 # Usage:
 --------
-Navigate to the build folder and run the following commands:
-cmake ..
-make
 ./s5solver "<inputFormula>"

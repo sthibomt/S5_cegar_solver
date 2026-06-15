@@ -3,6 +3,7 @@
 #include "parser/generated/ModalLexer.h"
 #include "parser/generated/ModalParser.h"
 #include "ast/ASTBuilder.h"
+#include "utils/ASTPrinter.h"
 
 using namespace antlr4;
 
@@ -16,7 +17,7 @@ int main(int argc, const char* argv[])
     }
     else
     {
-        input = "<2>(p & q)";   // default
+        input = "!p";
     }    
 
     ANTLRInputStream stream(input);
@@ -29,14 +30,16 @@ int main(int argc, const char* argv[])
     ASTBuilder builder;
 
     auto result = builder.visit(tree);
-
-    std::cout << "Input Text is: " << input << std::endl;
+    
     std::cout << "Has value: " << result.has_value() << std::endl;
     std::cout << "Type: " << result.type().name() << std::endl; 
 
     auto ast = std::any_cast<std::shared_ptr<Formula>>(result);
-        
-    std::cout << "Parsing successful!" << input << std::endl;
+    std::cout << "\nAST:\n";
+    PrintFormula(ast);
+
+    std::cout << "Parsing successful!" << std::endl;
+    std::cout << "Input Formula: " << input << std::endl;
 
     return 0;
 }

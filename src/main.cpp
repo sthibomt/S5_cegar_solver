@@ -1,23 +1,27 @@
 #include <iostream>
 #include <antlr4-runtime/antlr4-runtime.h>
+
 #include "parser/generated/ModalLexer.h"
 #include "parser/generated/ModalParser.h"
 #include "ast/ASTBuilder.h"
 #include "utils/ASTPrinter.h"
 
+#include "logic/FormulaUtils.h"
+#include "logic/FormulaHasher.h"
+
 using namespace antlr4;
 
+//---------------------------------------------------------------------------------
 int main(int argc, const char* argv[]) 
 {   
     std::string input;
-
     if (argc > 1)
     {
         input = argv[1];
     }
     else
     {
-        input = "!p";
+        input = '!p';
     }    
 
     ANTLRInputStream stream(input);
@@ -35,7 +39,11 @@ int main(int argc, const char* argv[])
     std::cout << "Type: " << result.type().name() << std::endl; 
 
     auto ast = std::any_cast<std::shared_ptr<Formula>>(result);
-    std::cout << "\nAST:\n";
+
+    std::cout << "Formula: " << FormulaToString(ast) << std::endl;
+
+    // Print the AST
+    std::cout << "\nAST Structure:\n";
     PrintFormula(ast);
 
     std::cout << "Parsing successful!" << std::endl;

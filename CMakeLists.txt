@@ -20,7 +20,11 @@ add_executable(s5solver
 
     src/ast/Formula.cpp
     src/ast/ASTBuilder.cpp
+
     src/utils/ASTPrinter.cpp
+    
+    src/logic/FormulaHasher.cpp
+    src/logic/FormulaUtils.cpp  
 
     src/parser/generated/ModalLexer.cpp
     src/parser/generated/ModalParser.cpp

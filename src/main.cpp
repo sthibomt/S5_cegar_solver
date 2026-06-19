@@ -21,7 +21,7 @@ int main(int argc, const char* argv[])
     }
     else
     {
-        input = '!p';
+        input = "!p";
     }    
 
     ANTLRInputStream stream(input);
@@ -41,6 +41,12 @@ int main(int argc, const char* argv[])
     auto ast = std::any_cast<std::shared_ptr<Formula>>(result);
 
     std::cout << "Formula: " << FormulaToString(ast) << std::endl;
+    std::cout << "Hash: " << FormulaHash(ast) << std::endl;
+    std::cout << "Equal to self: " << FormulaEquals(ast, ast) << std::endl;
+    std::unordered_set<std::shared_ptr<Formula>, FormulaHasher, FormulaEqual> formulas;
+    formulas.insert(ast);
+    formulas.insert(ast);
+    std::cout << "Set size: " << formulas.size() << std::endl;
 
     // Print the AST
     std::cout << "\nAST Structure:\n";

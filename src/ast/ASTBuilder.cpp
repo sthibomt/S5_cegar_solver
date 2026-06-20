@@ -61,7 +61,7 @@ std::any ASTBuilder::visitUnary(ModalParser::UnaryContext *ctx)
     if (ctx->NOT())
     {
         auto child = std::any_cast<std::shared_ptr<Formula>>(visit(ctx->unary()));  
-        return std::make_shared<UnaryFormula>(FormulaType::NOT, child);
+        return std::static_pointer_cast<Formula>(std::make_shared<UnaryFormula>(FormulaType::NOT, child));
     }
 
     if (ctx->implication())

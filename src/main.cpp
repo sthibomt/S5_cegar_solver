@@ -40,7 +40,8 @@ int main(int argc, const char* argv[])
 
     auto ast = std::any_cast<std::shared_ptr<Formula>>(result);
 
-    std::cout << "Formula: " << FormulaToString(ast) << std::endl;
+    // Test Formula Utilities/helper functionality
+    std::cout << "Input Formula: " << FormulaToString(ast) << std::endl;
     std::cout << "Hash: " << FormulaHash(ast) << std::endl;
     std::cout << "Equal to self: " << FormulaEquals(ast, ast) << std::endl;
     std::unordered_set<std::shared_ptr<Formula>, FormulaHasher, FormulaEqual> formulas;
@@ -50,10 +51,7 @@ int main(int argc, const char* argv[])
 
     // Print the AST
     std::cout << "\nAST Structure:\n";
-    PrintFormula(ast);
-
-    std::cout << "Parsing successful!" << std::endl;
-    std::cout << "Input Formula: " << input << std::endl;
+    PrintFormula(ast);  
 
     return 0;
 }

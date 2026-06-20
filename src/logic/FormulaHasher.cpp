@@ -42,7 +42,6 @@ size_t FormulaHash(const shared_ptr<Formula>& formula)
         case FormulaType::IMPLIES:
         {
             auto binary = dynamic_pointer_cast<BinaryFormula>(formula);
-
             HashCombine(seed, FormulaHash(binary->left));
             HashCombine(seed, FormulaHash(binary->right));
             break;

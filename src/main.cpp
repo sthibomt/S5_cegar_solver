@@ -1,16 +1,20 @@
 #include <iostream>
 #include <antlr4-runtime/antlr4-runtime.h>
+
 #include "parser/generated/ModalLexer.h"
 #include "parser/generated/ModalParser.h"
 #include "ast/ASTBuilder.h"
 #include "utils/ASTPrinter.h"
 
+#include "logic/FormulaUtils.h"
+#include "logic/FormulaHasher.h"
+
 using namespace antlr4;
 
+//---------------------------------------------------------------------------------
 int main(int argc, const char* argv[]) 
 {   
     std::string input;
-
     if (argc > 1)
     {
         input = argv[1];
@@ -35,11 +39,19 @@ int main(int argc, const char* argv[])
     std::cout << "Type: " << result.type().name() << std::endl; 
 
     auto ast = std::any_cast<std::shared_ptr<Formula>>(result);
-    std::cout << "\nAST:\n";
-    PrintFormula(ast);
 
-    std::cout << "Parsing successful!" << std::endl;
-    std::cout << "Input Formula: " << input << std::endl;
+    // Test Formula Utilities/helper functionality
+    std::cout << "Input Formula: " << FormulaToString(ast) << std::endl;
+    std::cout << "Hash: " << FormulaHash(ast) << std::endl;
+    std::cout << "Equal to self: " << FormulaEquals(ast, ast) << std::endl;
+    std::unordered_set<std::shared_ptr<Formula>, FormulaHasher, FormulaEqual> formulas;
+    formulas.insert(ast);
+    formulas.insert(ast);
+    std::cout << "Set size: " << formulas.size() << std::endl;
+
+    // Print the AST
+    std::cout << "\nAST Structure:\n";
+    PrintFormula(ast);  
 
     return 0;
 }

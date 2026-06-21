@@ -4,10 +4,14 @@
 #include "parser/generated/ModalLexer.h"
 #include "parser/generated/ModalParser.h"
 #include "ast/ASTBuilder.h"
-#include "utils/ASTPrinter.h"
+#include "ast/ASTPrinter.h"
 
 #include "logic/FormulaUtils.h"
 #include "logic/FormulaHasher.h"
+
+#include "tableau/BranchUtils.h"
+#include "tableau/TableauNode.h"
+#include "tableau/FormulaClassifier.h"
 
 using namespace antlr4;
 
@@ -40,8 +44,13 @@ int main(int argc, const char* argv[])
 
     auto ast = std::any_cast<std::shared_ptr<Formula>>(result);
 
+    // TableauNode test
+    TableauNode node(0);
+    node.AddFormula(ast);
+    std::cout << "\nTableau Closed: " << BranchUtils::IsClosed(node) << std::endl;
+
     // Test Formula Utilities/helper functionality
-    std::cout << "Input Formula: " << FormulaToString(ast) << std::endl;
+    std::cout << "\nInput Formula: " << FormulaToString(ast) << std::endl;
     std::cout << "Hash: " << FormulaHash(ast) << std::endl;
     std::cout << "Equal to self: " << FormulaEquals(ast, ast) << std::endl;
     std::unordered_set<std::shared_ptr<Formula>, FormulaHasher, FormulaEqual> formulas;

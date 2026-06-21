@@ -20,8 +20,7 @@ add_executable(s5solver
 
     src/ast/Formula.cpp
     src/ast/ASTBuilder.cpp
-
-    src/utils/ASTPrinter.cpp
+    src/ast/ASTPrinter.cpp
     
     src/logic/FormulaHasher.cpp
     src/logic/FormulaUtils.cpp  
@@ -30,13 +29,17 @@ add_executable(s5solver
     src/parser/generated/ModalParser.cpp
     src/parser/generated/ModalBaseVisitor.cpp
     src/parser/generated/ModalVisitor.cpp
+
+    src/tableau/FormulaClassifier.cpp
+    src/tableau/BranchUtils.cpp 
+    src/tableau/TableauNode.cpp
 )
 
 target_include_directories(s5solver PRIVATE 
     /usr/local/include/antlr4-runtime   
     ${CMAKE_SOURCE_DIR}/src
     ${CMAKE_SOURCE_DIR}/src/parser/generated
-    ${CMAKE_SOURCE_DIR}/src/ast
+    ${CMAKE_SOURCE_DIR}/src/ast    
 )
 
 target_link_libraries(s5solver antlr4-runtime)

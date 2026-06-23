@@ -12,6 +12,8 @@
 #include "tableau/BranchUtils.h"
 #include "tableau/TableauNode.h"
 #include "tableau/FormulaClassifier.h"
+#include "tableau/TableauExpander.h"
+#include "tableau/ExpansionResult.h"
 
 using namespace antlr4;
 
@@ -43,6 +45,10 @@ int main(int argc, const char* argv[])
     std::cout << "Type: " << result.type().name() << std::endl; 
 
     auto ast = std::any_cast<std::shared_ptr<Formula>>(result);
+
+    // Expand the formula
+    auto expander = TableauExpander::Expand(ast);
+    std::cout << "Branching: " << expander.branching << std::endl;
 
     // TableauNode test
     TableauNode node(0);

@@ -8,6 +8,6 @@
 struct ExpansionResult
 {
     bool branching = false;
-    std::vector<std::shared_ptr<Formula>> leftBranch;
-    std::vector<std::shared_ptr<Formula>> rightBranch;
+    std::vector<FormulaPtr> leftBranch;
+    std::vector<FormulaPtr> rightBranch;
 };

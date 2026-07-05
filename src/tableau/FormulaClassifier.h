@@ -16,5 +16,5 @@ enum class FormulaClass
 class FormulaClassifier
 {
 public:
-    static FormulaClass Classify(const std::shared_ptr<Formula>& formula);
+    static FormulaClass Classify(const FormulaPtr& formula);
 };

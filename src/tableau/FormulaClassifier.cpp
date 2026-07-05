@@ -1,7 +1,7 @@
 #include "FormulaClassifier.h"
 
 //---------------------------------------------------------------------------------
-FormulaClass FormulaClassifier::Classify(const std::shared_ptr<Formula>& formula)
+FormulaClass FormulaClassifier::Classify(const FormulaPtr& formula)
 {
     switch (formula->type)
     {

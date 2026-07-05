@@ -44,7 +44,7 @@ int main(int argc, const char* argv[])
     std::cout << "Has value: " << result.has_value() << std::endl;
     std::cout << "Type: " << result.type().name() << std::endl; 
 
-    auto ast = std::any_cast<std::shared_ptr<Formula>>(result);
+    auto ast = std::any_cast<FormulaPtr>(result);
 
     // Expand the formula
     auto expander = TableauExpander::Expand(ast);
@@ -59,7 +59,7 @@ int main(int argc, const char* argv[])
     std::cout << "\nInput Formula: " << FormulaToString(ast) << std::endl;
     std::cout << "Hash: " << FormulaHash(ast) << std::endl;
     std::cout << "Equal to self: " << FormulaEquals(ast, ast) << std::endl;
-    std::unordered_set<std::shared_ptr<Formula>, FormulaHasher, FormulaEqual> formulas;
+    std::unordered_set<FormulaPtr, FormulaHasher, FormulaEqual> formulas;
     formulas.insert(ast);
     formulas.insert(ast);
     std::cout << "Set size: " << formulas.size() << std::endl;

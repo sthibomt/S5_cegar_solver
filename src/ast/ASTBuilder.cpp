@@ -11,9 +11,9 @@ std::any ASTBuilder::visitImplication(ModalParser::ImplicationContext *ctx)
 {
     if (ctx->IMPLIES())
     {
-        auto left = std::any_cast<std::shared_ptr<Formula>>(visit(ctx->disjunction()));
-        auto right = std::any_cast<std::shared_ptr<Formula>>(visit(ctx->implication()));
-        std::shared_ptr<Formula> result = std::make_shared<BinaryFormula>(FormulaType::IMPLIES, left, right);
+        auto left = std::any_cast<FormulaPtr>(visit(ctx->disjunction()));
+        auto right = std::any_cast<FormulaPtr>(visit(ctx->implication()));
+        FormulaPtr result = std::make_shared<BinaryFormula>(FormulaType::IMPLIES, left, right);
         return result;
     }
     return visit(ctx->disjunction());
@@ -22,11 +22,11 @@ std::any ASTBuilder::visitImplication(ModalParser::ImplicationContext *ctx)
 //---------------------------------------------------------------------------------
 std::any ASTBuilder::visitDisjunction(ModalParser::DisjunctionContext *ctx)
 {
-    auto result = std::any_cast<std::shared_ptr<Formula>>(visit(ctx->conjunction(0)));
+    auto result = std::any_cast<FormulaPtr>(visit(ctx->conjunction(0)));
 
     for (size_t i = 1; i < ctx->conjunction().size(); i++)
     {
-        auto rhs = std::any_cast<std::shared_ptr<Formula>>(visit(ctx->conjunction(i)));
+        auto rhs = std::any_cast<FormulaPtr>(visit(ctx->conjunction(i)));
         result = std::make_shared<BinaryFormula>(FormulaType::OR,result,rhs);
     }
     return result;
@@ -35,11 +35,11 @@ std::any ASTBuilder::visitDisjunction(ModalParser::DisjunctionContext *ctx)
 //---------------------------------------------------------------------------------
 std::any ASTBuilder::visitConjunction(ModalParser::ConjunctionContext *ctx)
 {
-    auto result = std::any_cast<std::shared_ptr<Formula>>(visit(ctx->unary(0)));
+    auto result = std::any_cast<FormulaPtr>(visit(ctx->unary(0)));
 
     for (size_t i = 1; i < ctx->unary().size(); ++i)
     {
-        auto rhs = std::any_cast<std::shared_ptr<Formula>>(visit(ctx->unary(i)));
+        auto rhs = std::any_cast<FormulaPtr>(visit(ctx->unary(i)));
         result = std::make_shared<BinaryFormula>(FormulaType::AND, result, rhs);              
     }
     return result;
@@ -60,7 +60,7 @@ std::any ASTBuilder::visitUnary(ModalParser::UnaryContext *ctx)
 
     if (ctx->NOT())
     {
-        auto child = std::any_cast<std::shared_ptr<Formula>>(visit(ctx->unary()));  
+        auto child = std::any_cast<FormulaPtr>(visit(ctx->unary()));  
         return std::static_pointer_cast<Formula>(std::make_shared<UnaryFormula>(FormulaType::NOT, child));
     }
 
@@ -68,7 +68,6 @@ std::any ASTBuilder::visitUnary(ModalParser::UnaryContext *ctx)
     {
         return visit(ctx->implication());
     }
-
     return visitChildren(ctx);
 }
 
@@ -77,40 +76,39 @@ std::any ASTBuilder::visitModal(ModalParser::ModalContext *ctx)
 {
     if (ctx->BOX())
     {
-        auto child = std::any_cast<std::shared_ptr<Formula>>(visit(ctx->unary()));
-        std::shared_ptr<Formula> result = std::make_shared<ModalFormula>(FormulaType::BOX, -1, child);
+        auto child = std::any_cast<FormulaPtr>(visit(ctx->unary()));
+        FormulaPtr result = std::make_shared<ModalFormula>(FormulaType::BOX, -1, child);
         return result;
     }
 
     if (ctx->DIAMOND())
     {
-        auto child = std::any_cast<std::shared_ptr<Formula>>(visit(ctx->unary()));
-        std::shared_ptr<Formula> result = std::make_shared<ModalFormula>(FormulaType::DIAMOND, -1, child);
+        auto child = std::any_cast<FormulaPtr>(visit(ctx->unary()));
+        FormulaPtr result = std::make_shared<ModalFormula>(FormulaType::DIAMOND, -1, child);
         return result;
     }
 
     if (ctx->agentBox())
     {
         int agent = std::stoi(ctx->agentBox()->INT()->getText());
-        auto child = std::any_cast<std::shared_ptr<Formula>>(visit(ctx->unary()));
-        std::shared_ptr<Formula> result = std::make_shared<ModalFormula>(FormulaType::BOX, agent, child);
+        auto child = std::any_cast<FormulaPtr>(visit(ctx->unary()));
+        FormulaPtr result = std::make_shared<ModalFormula>(FormulaType::BOX, agent, child);
         return result;
     }
 
     if (ctx->agentDiamond())
     {
         int agent = std::stoi(ctx->agentDiamond()->INT()->getText());
-        auto child = std::any_cast<std::shared_ptr<Formula>>(visit(ctx->unary()));
-        std::shared_ptr<Formula> result = std::make_shared<ModalFormula>(FormulaType::DIAMOND, agent, child);
+        auto child = std::any_cast<FormulaPtr>(visit(ctx->unary()));
+        FormulaPtr result = std::make_shared<ModalFormula>(FormulaType::DIAMOND, agent, child);
         return result;
     }
-
     return visitChildren(ctx);
 }
 
 //---------------------------------------------------------------------------------
 std::any ASTBuilder::visitAtom(ModalParser::AtomContext *ctx)
 {
-    std::shared_ptr<Formula> result = std::make_shared<AtomFormula>(ctx->IDENTIFIER()->getText());
+    FormulaPtr result = std::make_shared<AtomFormula>(ctx->IDENTIFIER()->getText());
     return result;    
 }

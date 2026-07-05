@@ -35,6 +35,7 @@ add_executable(s5solver
     src/tableau/TableauNode.cpp
     src/tableau/TableauExpander.cpp
     src/tableau/TableauPrinter.cpp
+    src/tableau/ExpansionRules.cpp
 )
 
 target_include_directories(s5solver PRIVATE 

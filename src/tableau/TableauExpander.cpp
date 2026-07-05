@@ -2,7 +2,7 @@
 #include "../ast/Formula.h"
 
 //---------------------------------------------------------------------------------
-ExpansionResult TableauExpander::Expand(const std::shared_ptr<Formula>& formula)
+ExpansionResult TableauExpander::Expand(const FormulaPtr& formula)
 {
     ExpansionResult result;
     auto binary = std::dynamic_pointer_cast<BinaryFormula>(formula);

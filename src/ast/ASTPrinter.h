@@ -3,4 +3,4 @@
 #include <memory>
 #include "../ast/Formula.h"
 
-void PrintFormula(const std::shared_ptr<Formula>& formula, int indent = 0);
+void PrintFormula(const FormulaPtr& formula, int indent = 0);

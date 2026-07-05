@@ -16,8 +16,8 @@ public:
     bool closed = false;
     TableauNode* parent = nullptr;
     std::vector<std::shared_ptr<TableauNode>> children;
-    std::unordered_set<std::shared_ptr<Formula>, FormulaHasher, FormulaEqual> formulas;
-    explicit TableauNode(int nodeId);
+    std::unordered_set<FormulaPtr, FormulaHasher, FormulaEqual> formulas;
 
-    void AddFormula(const std::shared_ptr<Formula>& formula);
+    explicit TableauNode(int nodeId);
+    void AddFormula(const FormulaPtr& formula);
 };

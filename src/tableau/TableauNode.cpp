@@ -6,7 +6,7 @@ TableauNode::TableauNode(int nodeId) : id(nodeId)
 }
 
 //---------------------------------------------------------------------------------
-void TableauNode::AddFormula(const std::shared_ptr<Formula>& formula)
+void TableauNode::AddFormula(const FormulaPtr& formula)
 {
     formulas.insert(formula);
 }

@@ -6,5 +6,5 @@
 class TableauExpander
 {
 public:
-    static ExpansionResult Expand(const std::shared_ptr<Formula>& formula);
+    static ExpansionResult Expand(const FormulaPtr& formula);
 };

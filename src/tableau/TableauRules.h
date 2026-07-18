@@ -1,6 +1,7 @@
 #pragma once
 
-#include "../ast/Formula.h"
+#include <vector>
+#include "TableauNode.h"
 
 //---------------------------------------------------------------------------------
 enum class FormulaClass
@@ -13,8 +14,11 @@ enum class FormulaClass
 };
 
 //---------------------------------------------------------------------------------
-class FormulaClassifier
+class TableauRules
 {
 public:
     static FormulaClass Classify(const FormulaPtr& formula);
+    static void ExpandAlpha(TableauNode& node, const FormulaPtr& formula);
+    static void ExpandBeta(TableauNode& node,const FormulaPtr& formula, int& nextId);   
+    
 };

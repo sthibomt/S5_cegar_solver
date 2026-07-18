@@ -30,12 +30,12 @@ add_executable(s5solver
     src/parser/generated/ModalBaseVisitor.cpp
     src/parser/generated/ModalVisitor.cpp
 
-    src/tableau/FormulaClassifier.cpp
+    
     src/tableau/BranchUtils.cpp 
     src/tableau/TableauNode.cpp
-    src/tableau/TableauExpander.cpp
+    src/tableau/TableauEngine.cpp
     src/tableau/TableauPrinter.cpp
-    src/tableau/ExpansionRules.cpp
+    src/tableau/TableauRules.cpp
 )
 
 target_include_directories(s5solver PRIVATE 

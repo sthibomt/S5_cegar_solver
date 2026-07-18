@@ -1,15 +1,52 @@
 #include "TableauPrinter.h"
+
 #include <iostream>
 
-using namespace std;
+#include "../logic/FormulaUtils.h"
+
+//---------------------------------------------------------------------------------
+void PrintNode(const TableauNode& node, int depth)
+{
+    // Indentation
+    std::string indent(depth * 4, ' ');
+
+    std::cout << indent << "Node " << node.id;
+
+    if (node.closed)
+    {
+        std::cout << " (closed)";
+    }
+
+    std::cout << '\n';
+
+    std::cout << indent << "--------------------\n";
+
+    for (const auto& entry : node.formulas)
+    {
+        std::cout << indent;
+
+        if (entry.expanded)
+        {
+            std::cout << "[x] ";
+        }
+        else
+        {
+            std::cout << "[ ] ";
+        }
+
+        std::cout << FormulaToString(entry.formula) << '\n';
+    }
+
+    std::cout << '\n';
+
+    for (const auto& child : node.children)
+    {
+        PrintNode(*child, depth + 1);
+    }
+}
 
 //---------------------------------------------------------------------------------
 void PrintBranch(const TableauNode& node)
 {
-    cout << "Branch:" << endl;
-    for (const auto& formula : node.formulas)
-    {
-        cout << "  " << formula << endl;
-    }
-    cout << endl;
+    PrintNode(node, 0);
 }

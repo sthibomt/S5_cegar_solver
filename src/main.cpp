@@ -27,12 +27,9 @@ int main(int argc, const char* argv[])
     if (argc > 1)
         input = argv[1];
     else
-        input = "!p";
-
-    //--------------------------------------------------------
-    // Parse
-    //--------------------------------------------------------
-
+        input = "p&!q";
+    
+    // Parse    
     ANTLRInputStream stream(input);
     ModalLexer lexer(&stream);
     CommonTokenStream tokens(&lexer);
@@ -48,24 +45,19 @@ int main(int argc, const char* argv[])
     std::cout << "Type      : " << result.type().name() << "\n\n";
 
     FormulaPtr ast = std::any_cast<FormulaPtr>(result);
-
-    //--------------------------------------------------------
-    // Formula utilities
-    //--------------------------------------------------------
+    
+    // Formula utilities    
     std::cout << "Input Formula : " << FormulaToString(ast) << '\n';
     std::cout << "Hash          : " << FormulaHash(ast) << '\n';
     std::cout << "Equal to self : " << FormulaEquals(ast, ast) << "\n\n";
 
-    //--------------------------------------------------------
-    // AST
-    //--------------------------------------------------------
+    
+    // AST    
     std::cout << "AST\n";
     std::cout << "---------------------------\n";
     PrintFormula(ast);
-
-    //--------------------------------------------------------
+    
     // Tableau
-    //--------------------------------------------------------
     TableauNode root(0);
     root.AddFormula(ast);
     int nextId = 1;
@@ -74,12 +66,10 @@ int main(int argc, const char* argv[])
     std::cout << "\nTableau\n";
     std::cout << "---------------------------\n";
     PrintBranch(root);
-
-    //--------------------------------------------------------
+    
     // Branch status
-    //--------------------------------------------------------
-
-    std::cout << "\nClosed : " << BranchUtils::IsClosed(root) << '\n';
-
+    bool tableauClosed = BranchUtils::IsTableauClosed(root);
+    std::cout << "\nTableau Closed: " << (tableauClosed ? "Yes (UNSAT)" : "No (SAT)") << '\n';    
+    
     return 0;
 }

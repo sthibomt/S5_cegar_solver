@@ -1,7 +1,5 @@
-#include "TableauPrinter.h"
-
 #include <iostream>
-
+#include "TableauPrinter.h"
 #include "../logic/FormulaUtils.h"
 
 //---------------------------------------------------------------------------------
@@ -21,7 +19,7 @@ void PrintNode(const TableauNode& node, int depth)
 
     std::cout << indent << "--------------------\n";
 
-    for (const auto& entry : node.formulas)
+    for (const auto& entry : node.formulaEntries)
     {
         std::cout << indent;
 

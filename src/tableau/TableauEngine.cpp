@@ -1,5 +1,4 @@
 #include "TableauEngine.h"
-
 #include "BranchUtils.h"
 #include "TableauRules.h"
 
@@ -20,7 +19,7 @@ void TableauEngine::ExpandBranch(TableauNode& node, int& nextId)
 
         if (entry == nullptr)
         {
-            // Nothing left to expand.
+            // If there is left to expand.
             return;
         }
 

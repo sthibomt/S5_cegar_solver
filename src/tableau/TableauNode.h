@@ -24,7 +24,7 @@ public:
     bool closed = false;
     TableauNode* parent = nullptr;
     std::vector<NodePtr> children;
-    std::vector<FormulaEntry> formulas;
+    std::vector<FormulaEntry> formulaEntries;
 
     explicit TableauNode(int nodeId);
     void AddFormula(const FormulaPtr& formula);

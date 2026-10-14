@@ -13,13 +13,13 @@ void TableauNode::AddFormula(const FormulaPtr& formula)
     if (Contains(formula))
         return;
 
-    formulas.push_back({formula, false});
+    formulaEntries.push_back({formula, false});
 }
 
 //------------------------------------------------------------
 bool TableauNode::Contains(const FormulaPtr& formula) const
 {
-    for (const auto& entry : formulas)
+    for (const auto& entry : formulaEntries)
     {
         if (FormulaEquals(entry.formula, formula))
             return true;
@@ -31,7 +31,7 @@ bool TableauNode::Contains(const FormulaPtr& formula) const
 //------------------------------------------------------------
 FormulaEntry* TableauNode::NextUnexpandedFormula()
 {
-    for (auto& entry : formulas)
+    for (auto& entry : formulaEntries)
     {
         if (!entry.expanded)
             return &entry;
@@ -43,7 +43,7 @@ FormulaEntry* TableauNode::NextUnexpandedFormula()
 //------------------------------------------------------------
 void TableauNode::MarkExpanded(const FormulaPtr& formula)
 {
-    for (auto& entry : formulas)
+    for (auto& entry : formulaEntries)
     {
         if (FormulaEquals(entry.formula, formula))
         {

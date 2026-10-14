@@ -10,7 +10,7 @@ FormulaClass TableauRules::Classify(const FormulaPtr& formula)
             return FormulaClass::LITERAL;
 
         case FormulaType::BOX:
-        case FormulaType::DIAMOND:
+        case FormulaType::DIAMOND:  
             return FormulaClass::MODAL;
 
         case FormulaType::AND:
@@ -55,9 +55,8 @@ void TableauRules::ExpandAlpha(TableauNode& node, const FormulaPtr& formula)
 {
     switch (formula->type)
     {
-        //---------------------------------
-        // A & B
-        //---------------------------------
+        
+        // A & B        
         case FormulaType::AND:
         {
             auto binary = std::dynamic_pointer_cast<BinaryFormula>(formula);
@@ -69,20 +68,16 @@ void TableauRules::ExpandAlpha(TableauNode& node, const FormulaPtr& formula)
             node.AddFormula(binary->right);
             break;
         }
-
-        //---------------------------------
-        // !(...)
-        //---------------------------------
+        
+        // !(...)        
         case FormulaType::NOT:
         {
             auto unary = std::dynamic_pointer_cast<UnaryFormula>(formula);
 
             if (!unary)
                 return;
-
-            //---------------------------------
-            // !!A
-            //---------------------------------
+            
+            // !!A            
             if (unary->child->type == FormulaType::NOT)
             {
                 auto inner = std::dynamic_pointer_cast<UnaryFormula>(unary->child);
@@ -90,10 +85,8 @@ void TableauRules::ExpandAlpha(TableauNode& node, const FormulaPtr& formula)
                 node.AddFormula(inner->child);
                 return;
             }
-
-            //---------------------------------
-            // !(A | B)
-            //---------------------------------
+            
+            // !(A | B)            
             if (unary->child->type == FormulaType::OR)
             {
                 auto binary =
@@ -105,10 +98,8 @@ void TableauRules::ExpandAlpha(TableauNode& node, const FormulaPtr& formula)
 
                 return;
             }
-
-            //---------------------------------
-            // !(A -> B)
-            //---------------------------------
+            
+            // !(A -> B)            
             if (unary->child->type == FormulaType::IMPLIES)
             {
                 auto binary = std::dynamic_pointer_cast<BinaryFormula>(unary->child);
@@ -134,14 +125,13 @@ void TableauRules::ExpandBeta(TableauNode& node, const FormulaPtr& formula, int&
     left->parent = &node;
     right->parent = &node;
 
-    left->formulas = node.formulas;
-    right->formulas = node.formulas;
+    left->formulaEntries = node.formulaEntries;
+    right->formulaEntries = node.formulaEntries;
 
     switch (formula->type)
     {
-        //---------------------------------
-        // A | B
-        //---------------------------------
+        
+        // A | B        
         case FormulaType::OR:
         {
             auto binary = std::dynamic_pointer_cast<BinaryFormula>(formula);
@@ -152,10 +142,8 @@ void TableauRules::ExpandBeta(TableauNode& node, const FormulaPtr& formula, int&
             right->AddFormula(binary->right);
             break;
         }
-
-        //---------------------------------
-        // A -> B
-        //---------------------------------
+        
+        // A -> B        
         case FormulaType::IMPLIES:
         {
             auto binary = std::dynamic_pointer_cast<BinaryFormula>(formula);
@@ -169,9 +157,8 @@ void TableauRules::ExpandBeta(TableauNode& node, const FormulaPtr& formula, int&
             break;
         }
 
-        //---------------------------------
-        // !(A & B)
-        //---------------------------------
+        
+        // !(A & B)        
         case FormulaType::NOT:
         {
             auto unary = std::dynamic_pointer_cast<UnaryFormula>(formula);

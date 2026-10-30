@@ -2,80 +2,91 @@
 #include "BranchUtils.h"
 #include "TableauRules.h"
 
-//---------------------------------------------------------------------------------
-void TableauEngine::ExpandBranch(TableauNode& node, int& nextId)
+TableauStatus TableauEngine::ExpandBranch(TableauNode& node, int& nextId)
 {
-    // Stop if branch is already closed.
-    if (BranchUtils::IsClosed(node))
-    {
-        node.closed = true;
-        return;
-    }
-
-    // Expand formulas until there are no more left.
     while (true)
     {
-        FormulaEntry* entry = node.NextUnexpandedFormula();
-
-        if (entry == nullptr)
+        // A contradictory branch is closed.
+        if (BranchUtils::IsClosed(node))
         {
-            // If there is left to expand.
-            return;
+            node.closed = true;
+            return TableauStatus::CLOSED;
         }
 
-        entry->expanded = true;
+        // Find the next formula that needs expansion.
+        FormulaEntry* entry = node.NextUnexpandedFormula();
+
+        // No remaining formulas means this branch is open
+        // and fully expanded under the supported rules.
+        if (entry == nullptr)
+            return TableauStatus::OPEN;
 
         FormulaPtr formula = entry->formula;
 
-        switch (TableauRules::Classify(formula))
+        FormulaClass classification = TableauRules::Classify(formula);
+
+        // These rules are not implemented yet.
+        if (classification == FormulaClass::MODAL || classification == FormulaClass::UNKNOWN)
         {
-            //--------------------------------------------------------
-            case FormulaClass::LITERAL:
-            {
-                // Literals require no expansion.
-                break;
-            }
+            return TableauStatus::INCOMPLETE;
+        }
 
-            //--------------------------------------------------------
+        // Mark before expansion so child nodes inherit the
+        // correct expanded state when formulas are copied.
+        entry->expanded = true;
+
+        switch (classification)
+        {
+            case FormulaClass::LITERAL:                
+                break;
+
             case FormulaClass::ALPHA:
-            {
                 TableauRules::ExpandAlpha(node, formula);
-
-                // Continue expanding this same branch.
                 break;
-            }
 
-            //--------------------------------------------------------
             case FormulaClass::BETA:
             {
                 TableauRules::ExpandBeta(node, formula, nextId);
 
-                // Expand each child recursively.
-                for (auto& child : node.children)
+                // A beta rule must create two child branches.
+                if (node.children.size() < 2)
+                    return TableauStatus::INCOMPLETE;
+
+                bool allClosed = true;
+                bool anyIncomplete = false;
+
+                for (const auto& child : node.children)
                 {
-                    ExpandBranch(*child, nextId);
+                    if (!child)
+                    {
+                        anyIncomplete = true;
+                        allClosed = false;
+                        continue;
+                    }
+
+                    TableauStatus childStatus =
+                        ExpandBranch(*child, nextId);
+
+                    if (childStatus != TableauStatus::CLOSED)
+                        allClosed = false;
+
+                    if (childStatus == TableauStatus::INCOMPLETE)
+                        anyIncomplete = true;
                 }
 
-                return;
+                if (allClosed)
+                    return TableauStatus::CLOSED;
+
+                if (anyIncomplete)
+                    return TableauStatus::INCOMPLETE;
+
+                // At least one branch remains open.
+                return TableauStatus::OPEN;
             }
 
-            //--------------------------------------------------------
             case FormulaClass::MODAL:
-            {
-                // Modal rules will be added later.
-                break;
-            }
-
-            //--------------------------------------------------------
-            default:
-                break;
-        }
-
-        // Check whether this branch has become closed.
-        if (BranchUtils::IsClosed(node))
-        {
-            node.closed = true;
-            return;
+            case FormulaClass::UNKNOWN:
+                return TableauStatus::INCOMPLETE;
         }
     }
 }

@@ -27,7 +27,7 @@ int main(int argc, const char* argv[])
     if (argc > 1)
         input = argv[1];
     else
-        input = "p&!q";
+        input = "[]q";
     
     // Parse    
     ANTLRInputStream stream(input);
@@ -61,15 +61,30 @@ int main(int argc, const char* argv[])
     TableauNode root(0);
     root.AddFormula(ast);
     int nextId = 1;
-    TableauEngine::ExpandBranch(root, nextId);
+    TableauStatus status = TableauEngine::ExpandBranch(root, nextId);
 
     std::cout << "\nTableau\n";
     std::cout << "---------------------------\n";
     PrintBranch(root);
     
     // Branch status
-    bool tableauClosed = BranchUtils::IsTableauClosed(root);
-    std::cout << "\nTableau Closed: " << (tableauClosed ? "Yes (UNSAT)" : "No (SAT)") << '\n';    
+    // bool tableauClosed = BranchUtils::IsTableauClosed(root);
+    // std::cout << "\nTableau Closed: " << (tableauClosed ? "Yes (UNSAT)" : "No (SAT)") << '\n';    
+     switch (status)
+      {
+        case TableauStatus::CLOSED:
+            std::cout << "CLOSED (UNSATISFIABLE)";
+            break;
+
+        case TableauStatus::OPEN:
+            std::cout << "OPEN (SATISFIABLE)";
+            break;
+
+        case TableauStatus::INCOMPLETE:
+            std::cout << "INCOMPLETE (RESULT UNKNOWN)";
+            break;
+    }
+    std::cout << '\n';
     
     return 0;
 }

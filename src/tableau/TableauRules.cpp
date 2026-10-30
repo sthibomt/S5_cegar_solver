@@ -54,9 +54,8 @@ FormulaClass TableauRules::Classify(const FormulaPtr& formula)
 void TableauRules::ExpandAlpha(TableauNode& node, const FormulaPtr& formula)
 {
     switch (formula->type)
-    {
-        
-        // A & B        
+    {       
+             
         case FormulaType::AND:
         {
             auto binary = std::dynamic_pointer_cast<BinaryFormula>(formula);
@@ -67,39 +66,31 @@ void TableauRules::ExpandAlpha(TableauNode& node, const FormulaPtr& formula)
             node.AddFormula(binary->left);
             node.AddFormula(binary->right);
             break;
-        }
-        
-        // !(...)        
+        }        
+              
         case FormulaType::NOT:
         {
             auto unary = std::dynamic_pointer_cast<UnaryFormula>(formula);
 
             if (!unary)
-                return;
-            
-            // !!A            
+                return;            
+                       
             if (unary->child->type == FormulaType::NOT)
             {
                 auto inner = std::dynamic_pointer_cast<UnaryFormula>(unary->child);
 
                 node.AddFormula(inner->child);
                 return;
-            }
-            
-            // !(A | B)            
+            }            
+                       
             if (unary->child->type == FormulaType::OR)
             {
-                auto binary =
-                    std::dynamic_pointer_cast<BinaryFormula>(unary->child);
-
+                auto binary = std::dynamic_pointer_cast<BinaryFormula>(unary->child);
                 node.AddFormula(std::make_shared<UnaryFormula>(FormulaType::NOT, binary->left));
-
                 node.AddFormula(std::make_shared<UnaryFormula>(FormulaType::NOT, binary->right));
-
                 return;
-            }
-            
-            // !(A -> B)            
+            }            
+                       
             if (unary->child->type == FormulaType::IMPLIES)
             {
                 auto binary = std::dynamic_pointer_cast<BinaryFormula>(unary->child);
@@ -155,10 +146,8 @@ void TableauRules::ExpandBeta(TableauNode& node, const FormulaPtr& formula, int&
 
             right->AddFormula(binary->right);
             break;
-        }
-
-        
-        // !(A & B)        
+        }        
+               
         case FormulaType::NOT:
         {
             auto unary = std::dynamic_pointer_cast<UnaryFormula>(formula);

@@ -1,29 +1,35 @@
 #include <iostream>
+
 #include <antlr4-runtime/antlr4-runtime.h>
 
 #include "parser/generated/ModalLexer.h"
 #include "parser/generated/ModalParser.h"
+
 #include "ast/ASTBuilder.h"
-#include "utils/ASTPrinter.h"
+#include "ast/ASTPrinter.h"
 
 #include "logic/FormulaUtils.h"
 #include "logic/FormulaHasher.h"
 
+#include "tableau/TableauNode.h"
+#include "tableau/TableauRules.h"
+#include "tableau/TableauEngine.h"
+#include "tableau/TableauPrinter.h"
+#include "tableau/BranchUtils.h"
+
 using namespace antlr4;
 
-//---------------------------------------------------------------------------------
-int main(int argc, const char* argv[]) 
-{   
+//------------------------------------------------------------
+int main(int argc, const char* argv[])
+{
     std::string input;
-    if (argc > 1)
-    {
-        input = argv[1];
-    }
-    else
-    {
-        input = "!p";
-    }    
 
+    if (argc > 1)
+        input = argv[1];
+    else
+        input = "[]q";
+    
+    // Parse    
     ANTLRInputStream stream(input);
     ModalLexer lexer(&stream);
     CommonTokenStream tokens(&lexer);
@@ -34,24 +40,49 @@ int main(int argc, const char* argv[])
     ASTBuilder builder;
 
     auto result = builder.visit(tree);
+
+    std::cout << "Has value : " << result.has_value() << '\n';
+    std::cout << "Type      : " << result.type().name() << "\n\n";
+
+    FormulaPtr ast = std::any_cast<FormulaPtr>(result);
     
-    std::cout << "Has value: " << result.has_value() << std::endl;
-    std::cout << "Type: " << result.type().name() << std::endl; 
+    // Formula utilities    
+    std::cout << "Input Formula : " << FormulaToString(ast) << '\n';
+    std::cout << "Hash          : " << FormulaHash(ast) << '\n';
+    std::cout << "Equal to self : " << FormulaEquals(ast, ast) << "\n\n";
 
-    auto ast = std::any_cast<std::shared_ptr<Formula>>(result);
+    
+    // AST    
+    std::cout << "AST\n";
+    std::cout << "---------------------------\n";
+    PrintFormula(ast);
+    
+    // Tableau
+    TableauNode root(0);
+    root.AddFormula(ast);
+    int nextId = 1;
+    TableauStatus status = TableauEngine::ExpandBranch(root, nextId);
 
-    // Test Formula Utilities/helper functionality
-    std::cout << "Input Formula: " << FormulaToString(ast) << std::endl;
-    std::cout << "Hash: " << FormulaHash(ast) << std::endl;
-    std::cout << "Equal to self: " << FormulaEquals(ast, ast) << std::endl;
-    std::unordered_set<std::shared_ptr<Formula>, FormulaHasher, FormulaEqual> formulas;
-    formulas.insert(ast);
-    formulas.insert(ast);
-    std::cout << "Set size: " << formulas.size() << std::endl;
+    std::cout << "\nTableau\n";
+    std::cout << "---------------------------\n";
+    PrintBranch(root);
+    
+    // Branch status        
+     switch (status)
+      {
+        case TableauStatus::CLOSED:
+            std::cout << "Tableau CLOSED (UNSATISFIABLE)";
+            break;
 
-    // Print the AST
-    std::cout << "\nAST Structure:\n";
-    PrintFormula(ast);  
+        case TableauStatus::OPEN:
+            std::cout << "Tableau OPEN (SATISFIABLE)";
+            break;
 
+        case TableauStatus::INCOMPLETE:
+            std::cout << "Tableau INCOMPLETE (RESULT UNKNOWN)";
+            break;
+    }
+    std::cout << '\n';
+    
     return 0;
 }

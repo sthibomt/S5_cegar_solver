@@ -4,16 +4,16 @@
 #include "../ast/Formula.h"
 
 //---------------------------------------------------------------------------------
-size_t FormulaHash(const std::shared_ptr<Formula>& formula);
+size_t FormulaHash(const FormulaPtr& formula);
 
 //---------------------------------------------------------------------------------
 struct FormulaHasher
 {
-    size_t operator()(const std::shared_ptr<Formula>& formula) const;
+    size_t operator()(const FormulaPtr& formula) const;
 };
 
 //---------------------------------------------------------------------------------
 struct FormulaEqual
 {
-    bool operator()(const std::shared_ptr<Formula>& lhs, const std::shared_ptr<Formula>& rhs) const;
+    bool operator()(const FormulaPtr& lhs, const FormulaPtr& rhs) const;
 };

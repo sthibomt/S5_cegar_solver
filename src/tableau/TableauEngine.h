@@ -5,9 +5,7 @@
 //---------------------------------------------------------------------------------
 enum class TableauStatus
 {
-    OPEN,       // A completed open tableau
-    CLOSED,     // Every branch is closed
-    INCOMPLETE  // Some required expansion is unsupported
+    OPEN, CLOSED, INCOMPLETE 
 };
 
 //---------------------------------------------------------------------------------

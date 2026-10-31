@@ -67,21 +67,19 @@ int main(int argc, const char* argv[])
     std::cout << "---------------------------\n";
     PrintBranch(root);
     
-    // Branch status
-    // bool tableauClosed = BranchUtils::IsTableauClosed(root);
-    // std::cout << "\nTableau Closed: " << (tableauClosed ? "Yes (UNSAT)" : "No (SAT)") << '\n';    
+    // Branch status        
      switch (status)
       {
         case TableauStatus::CLOSED:
-            std::cout << "CLOSED (UNSATISFIABLE)";
+            std::cout << "Tableau CLOSED (UNSATISFIABLE)";
             break;
 
         case TableauStatus::OPEN:
-            std::cout << "OPEN (SATISFIABLE)";
+            std::cout << "Tableau OPEN (SATISFIABLE)";
             break;
 
         case TableauStatus::INCOMPLETE:
-            std::cout << "INCOMPLETE (RESULT UNKNOWN)";
+            std::cout << "Tableau INCOMPLETE (RESULT UNKNOWN)";
             break;
     }
     std::cout << '\n';

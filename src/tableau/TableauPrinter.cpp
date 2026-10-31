@@ -7,7 +7,6 @@ void PrintNode(const TableauNode& node, int depth)
 {
     // Indentation
     std::string indent(depth * 4, ' ');
-
     std::cout << indent << "Node " << node.id;
 
     if (node.closed)
@@ -16,8 +15,7 @@ void PrintNode(const TableauNode& node, int depth)
     }
 
     std::cout << '\n';
-
-    std::cout << indent << "--------------------\n";
+    std::cout << indent << "---------------------------\n";
 
     for (const auto& entry : node.formulaEntries)
     {
@@ -34,7 +32,6 @@ void PrintNode(const TableauNode& node, int depth)
 
         std::cout << FormulaToString(entry.formula) << '\n';
     }
-
     std::cout << '\n';
 
     for (const auto& child : node.children)

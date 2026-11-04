@@ -10,6 +10,7 @@
 
 #include "logic/FormulaUtils.h"
 #include "logic/FormulaHasher.h"
+#include "logic/FormulaNormalizer.h"
 
 #include "tableau/TableauNode.h"
 #include "tableau/TableauRules.h"
@@ -45,12 +46,15 @@ int main(int argc, const char* argv[])
     std::cout << "Type      : " << result.type().name() << "\n\n";
 
     FormulaPtr ast = std::any_cast<FormulaPtr>(result);
+
+    // Convert the original formula to NNF.
+    FormulaPtr nnf = FormulaNormalizer::Convert(ast);
     
     // Formula utilities    
-    std::cout << "Input Formula : " << FormulaToString(ast) << '\n';
+    std::cout << "Original Formula : "<< FormulaToString(ast) << '\n';
+    std::cout << "NNF Formula      : "<< FormulaToString(nnf) << "\n\n";
     std::cout << "Hash          : " << FormulaHash(ast) << '\n';
     std::cout << "Equal to self : " << FormulaEquals(ast, ast) << "\n\n";
-
     
     // AST    
     std::cout << "AST\n";
@@ -59,7 +63,7 @@ int main(int argc, const char* argv[])
     
     // Tableau
     TableauNode root(0);
-    root.AddFormula(ast);
+    root.AddFormula(nnf);
     int nextId = 1;
     TableauStatus status = TableauEngine::ExpandBranch(root, nextId);
 

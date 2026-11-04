@@ -3,7 +3,7 @@
 using namespace std;
 
 //---------------------------------------------------------------------------------
-string FormulaToString(const shared_ptr<Formula>& formula)
+string FormulaToString(const FormulaPtr& formula)
 {
     if (!formula)
     {
@@ -69,7 +69,7 @@ string FormulaToString(const shared_ptr<Formula>& formula)
 }
 
 //---------------------------------------------------------------------------------
-bool FormulaEquals(const shared_ptr<Formula>& left, const shared_ptr<Formula>& right)
+bool FormulaEquals(const FormulaPtr& left, const FormulaPtr& right)
 {
     if (!left && !right)
     {

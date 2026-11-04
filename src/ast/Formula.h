@@ -23,7 +23,7 @@ class Formula
 };
 
 //---------------------------------------------------------------------------------
-// Aliases for smart pointer
+// Alias for smart pointer
 using FormulaPtr = std::shared_ptr<Formula>;
 
 //---------------------------------------------------------------------------------

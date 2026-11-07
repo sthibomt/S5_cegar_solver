@@ -5,6 +5,7 @@
 #include "Formula.h"
 #include "../parser/generated/ModalBaseVisitor.h"
 
+//---------------------------------------------------------------------------------
 class ASTBuilder : public ModalBaseVisitor
 {
 public:

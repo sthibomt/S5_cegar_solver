@@ -1,9 +1,9 @@
 #pragma once
 
-#include <memory>
 #include "../ast/Formula.h"
 
 //---------------------------------------------------------------------------------
+static constexpr std::size_t GOLDEN_RATIO = 0x9e3779b9;
 size_t FormulaHash(const FormulaPtr& formula);
 
 //---------------------------------------------------------------------------------

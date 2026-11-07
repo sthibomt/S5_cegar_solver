@@ -23,7 +23,8 @@ add_executable(s5solver
     src/ast/ASTPrinter.cpp
     
     src/logic/FormulaHasher.cpp
-    src/logic/FormulaUtils.cpp  
+    src/logic/FormulaUtils.cpp
+    src/logic/FormulaNormalizer.cpp
 
     src/parser/generated/ModalLexer.cpp
     src/parser/generated/ModalParser.cpp

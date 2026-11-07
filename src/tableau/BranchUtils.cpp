@@ -8,6 +8,8 @@ bool BranchUtils::IsClosed(const TableauNode& node)
     for (const auto& entry : node.formulaEntries)
     {
         FormulaPtr formula = entry.formula;
+        if (!formula)//For null formulas
+            continue;
         if (formula->type != FormulaType::ATOM)
             continue;
         auto atom = std::dynamic_pointer_cast<AtomFormula>(formula);
@@ -21,7 +23,7 @@ bool BranchUtils::IsClosed(const TableauNode& node)
 //------------------------------------------------------------
 bool BranchUtils::IsTableauClosed(const TableauNode& node)
 {
-    // A leaf branch is closed if it contains a contradiction.
+    
     if (node.children.empty())
         return BranchUtils::IsClosed(node);
 

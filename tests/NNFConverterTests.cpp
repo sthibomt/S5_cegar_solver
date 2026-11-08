@@ -24,6 +24,7 @@ TEST_F(NNFConverterTest, AtomRemainsUnchanged)
 }
 
 //---------------------------------------------------------------------------------
+
 TEST_F(NNFConverterTest, DoubleNegationIsEliminated)
 {
     FormulaPtr atom = MakeAtom("p");

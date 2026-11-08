@@ -9,3 +9,4 @@ CEGAR-Tableau based SAT solver optimized for S5 and extended to S5n.
 # Usage:
 --------
 ./s5solver "inputFormula"
+ctest --output-on-failure

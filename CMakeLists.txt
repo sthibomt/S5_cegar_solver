@@ -5,6 +5,12 @@ project(S5Solver)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+include(CTest)
+
+if(BUILD_TESTING)
+    add_subdirectory(tests)
+endif()
+
 include(FetchContent)
 
 FetchContent_Declare(

@@ -63,7 +63,8 @@ int main(int argc, const char* argv[])
     
     // Tableau
     TableauNode root(0);
-    root.AddFormula(nnf);
+    root.AddWorld(0);
+    root.AddFormula(0, nnf);
     int nextId = 1;
     TableauStatus status = TableauEngine::ExpandBranch(root, nextId);
 

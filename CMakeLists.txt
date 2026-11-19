@@ -43,6 +43,7 @@ add_executable(s5solver
     src/tableau/TableauEngine.cpp
     src/tableau/TableauPrinter.cpp
     src/tableau/TableauRules.cpp
+    src/tableau/TableauWorld.cpp
 )
 
 target_include_directories(s5solver PRIVATE 

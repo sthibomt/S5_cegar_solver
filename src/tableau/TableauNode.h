@@ -2,16 +2,9 @@
 
 #include <memory>
 #include <vector>
-#include "../ast/Formula.h"
+#include "TableauWorld.h"
 
-//------------------------------------------------------------
-struct FormulaEntry
-{
-    FormulaPtr formula;
-    bool expanded = false;
-};
-
-//------------------------------------------------------------
+//---------------------------------------------------------------------------------
 class TableauNode;
 
 using NodePtr = std::shared_ptr<TableauNode>;
@@ -19,16 +12,16 @@ using NodePtr = std::shared_ptr<TableauNode>;
 //------------------------------------------------------------
 class TableauNode
 {
-public:
-    int id;
+public:    
+    int id;  
     bool closed = false;
-    TableauNode* parent = nullptr;
-    std::vector<NodePtr> children;
-    std::vector<FormulaEntry> formulaEntries;
+    
+    TableauNode* parent = nullptr;  
+    std::vector<NodePtr> children;   
+    std::vector<TableauWorld> worlds;
 
-    explicit TableauNode(int nodeId);
-    void AddFormula(const FormulaPtr& formula);
-    FormulaEntry* NextUnexpandedFormula();
-    void MarkExpanded(const FormulaPtr& formula);
-    bool Contains(const FormulaPtr& formula) const;
+    explicit TableauNode(int nodeId);    
+    void AddWorld(int worldId); // Add a possible world to this branch.    
+    TableauWorld* FindWorld(int worldId);// Find a world using its identifier.    
+    void AddFormula(int worldId, const FormulaPtr& formula);// Add a formula to a particular world.
 };

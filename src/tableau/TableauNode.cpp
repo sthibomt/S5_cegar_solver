@@ -1,54 +1,37 @@
 #include "TableauNode.h"
 
-#include "../logic/FormulaUtils.h"
-
-//------------------------------------------------------------
-TableauNode::TableauNode(int nodeId) : id(nodeId)
+//---------------------------------------------------------------------------------
+TableauNode::TableauNode(int nodeId): id(nodeId)
 {
 }
 
-//------------------------------------------------------------
-void TableauNode::AddFormula(const FormulaPtr& formula)
-{
-    if (Contains(formula))
+//---------------------------------------------------------------------------------
+void TableauNode::AddWorld(int worldId)
+{    
+    if (FindWorld(worldId) != nullptr)// Avoid creating duplicate world identifiers.
         return;
 
-    formulaEntries.push_back({formula, false});
+    worlds.emplace_back(worldId);
 }
 
-//------------------------------------------------------------
-bool TableauNode::Contains(const FormulaPtr& formula) const
+//---------------------------------------------------------------------------------
+TableauWorld* TableauNode::FindWorld(int worldId)
 {
-    for (const auto& entry : formulaEntries)
+    for (auto& world : worlds)
     {
-        if (FormulaEquals(entry.formula, formula))
-            return true;
-    }
-
-    return false;
-}
-
-//------------------------------------------------------------
-FormulaEntry* TableauNode::NextUnexpandedFormula()
-{
-    for (auto& entry : formulaEntries)
-    {
-        if (!entry.expanded)
-            return &entry;
+        if (world.id == worldId)
+            return &world;
     }
 
     return nullptr;
 }
 
-//------------------------------------------------------------
-void TableauNode::MarkExpanded(const FormulaPtr& formula)
+//---------------------------------------------------------------------------------
+void TableauNode::AddFormula(int worldId, const FormulaPtr& formula)
 {
-    for (auto& entry : formulaEntries)
-    {
-        if (FormulaEquals(entry.formula, formula))
-        {
-            entry.expanded = true;
-            return;
-        }
-    }
+    TableauWorld* world = FindWorld(worldId);
+    if (world == nullptr)
+        return;
+
+    world->AddFormula(formula);
 }

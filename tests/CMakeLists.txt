@@ -12,8 +12,6 @@ enable_testing()
 
 # ------------------------------------------------------------
 # NNF Converter Tests
-# ------------------------------------------------------------
-
 add_executable(NNFConverterTests
     NNFConverterTests.cpp
     ../src/logic/FormulaNormalizer.cpp
@@ -29,12 +27,11 @@ target_link_libraries(NNFConverterTests PRIVATE
 
 # ------------------------------------------------------------
 # Tableau Rules Tests
-# ------------------------------------------------------------
-
 add_executable(TableauRulesTests
     TableauRulesTests.cpp
     ../src/tableau/TableauRules.cpp
     ../src/tableau/TableauNode.cpp
+    ../src/tableau/TableauWorld.cpp
     ../src/logic/FormulaUtils.cpp
     ../src/ast/Formula.cpp
 )

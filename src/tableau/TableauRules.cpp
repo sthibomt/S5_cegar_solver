@@ -1,7 +1,7 @@
 #include "TableauRules.h"
 #include "../ast/Formula.h"
 
-//---------------------------------------------------------------------------------                    
+//---------------------------------------------------------------------------------
 FormulaClass TableauRules::Classify(const FormulaPtr& formula)
 {
     if (!formula)
@@ -16,7 +16,8 @@ FormulaClass TableauRules::Classify(const FormulaPtr& formula)
         {
             auto unary = std::dynamic_pointer_cast<UnaryFormula>(formula);
 
-            if (unary && unary->child && unary->child->type == FormulaType::ATOM)
+            if (unary && unary->child &&
+                unary->child->type == FormulaType::ATOM)
             {
                 return FormulaClass::LITERAL;
             }
@@ -43,14 +44,13 @@ FormulaClass TableauRules::Classify(const FormulaPtr& formula)
 }
 
 //---------------------------------------------------------------------------------
-void TableauRules::ExpandAlpha(TableauNode& node, const FormulaPtr& formula)
+void TableauRules::ExpandAlpha(TableauWorld& world, const FormulaPtr& formula)
 {
     if (!formula)
         return;
 
     switch (formula->type)
-    {
-        // A & B
+    {        
         case FormulaType::AND:
         {
             auto binary = std::dynamic_pointer_cast<BinaryFormula>(formula);
@@ -58,8 +58,8 @@ void TableauRules::ExpandAlpha(TableauNode& node, const FormulaPtr& formula)
             if (!binary)
                 return;
 
-            node.AddFormula(binary->left);
-            node.AddFormula(binary->right);
+            world.AddFormula(binary->left);
+            world.AddFormula(binary->right);
 
             break;
         }
@@ -70,9 +70,29 @@ void TableauRules::ExpandAlpha(TableauNode& node, const FormulaPtr& formula)
 }
 
 //---------------------------------------------------------------------------------
-void TableauRules::ExpandBeta(TableauNode& node, const FormulaPtr& formula, int& nextId)
+void TableauRules::ExpandBeta(TableauNode& node, int worldId, const FormulaPtr& formula, int& nextId)
 {
-    if (!formula)
+    if (!formula || formula->type != FormulaType::OR)
+        return;
+
+    auto binary = std::dynamic_pointer_cast<BinaryFormula>(formula);
+
+    if (!binary || !binary->left || !binary->right)
+        return;
+
+    // Find the world in which the beta formula occurs.
+    const TableauWorld* sourceWorld = nullptr;
+
+    for (const auto& world : node.worlds)
+    {
+        if (world.id == worldId)
+        {
+            sourceWorld = &world;
+            break;
+        }
+    }
+
+    if (!sourceWorld)
         return;
 
     // Create two new branches.
@@ -82,32 +102,15 @@ void TableauRules::ExpandBeta(TableauNode& node, const FormulaPtr& formula, int&
     left->parent = &node;
     right->parent = &node;
 
-    // Copy the existing formulas into both branches.
-    left->formulaEntries = node.formulaEntries;
-    right->formulaEntries = node.formulaEntries;
+    // Copy all existing worlds and their formulas into both branches.
+    left->worlds = node.worlds;
+    right->worlds = node.worlds;
 
-    switch (formula->type)
-    {
-        // A | B
-        case FormulaType::OR:
-        {
-            auto binary = std::dynamic_pointer_cast<BinaryFormula>(formula);
+    // Left branch: A
+    left->AddFormula(worldId, binary->left);
 
-            if (!binary)
-                return;
-
-            // Left branch: A
-            left->AddFormula(binary->left);
-
-            // Right branch: B
-            right->AddFormula(binary->right);
-
-            break;
-        }
-
-        default:
-            return;
-    }
+    // Right branch: B
+    right->AddFormula(worldId, binary->right);
 
     // Attach the new branches to the current node.
     node.children.push_back(left);

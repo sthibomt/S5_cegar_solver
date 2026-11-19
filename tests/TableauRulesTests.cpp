@@ -2,6 +2,7 @@
 
 #include "../src/ast/Formula.h"
 #include "../src/tableau/TableauNode.h"
+#include "../src/tableau/TableauWorld.h"
 #include "../src/tableau/TableauRules.h"
 #include "../src/logic/FormulaUtils.h"
 
@@ -26,13 +27,15 @@ static FormulaPtr MakeAnd(const FormulaPtr& left, const FormulaPtr& right)
 //---------------------------------------------------------------------------------
 static FormulaPtr MakeOr(const FormulaPtr& left, const FormulaPtr& right)
 {
-    return std::make_shared<BinaryFormula>(FormulaType::OR, left, right );
+    return std::make_shared<BinaryFormula>(FormulaType::OR, left, right);
 }
 
 //---------------------------------------------------------------------------------
-static bool ContainsFormula(const TableauNode& node, const FormulaPtr& formula)
+static bool ContainsFormula(
+    const TableauWorld& world,
+    const FormulaPtr& formula)
 {
-    for (const auto& entry : node.formulaEntries)
+    for (const auto& entry : world.formulaEntries)
     {
         if (FormulaEquals(entry.formula, formula))
             return true;
@@ -43,10 +46,10 @@ static bool ContainsFormula(const TableauNode& node, const FormulaPtr& formula)
 
 //---------------------------------------------------------------------------------
 // Formula classification tests
-//---------------------------------------------------------------------------------
 TEST(TableauRulesTests, AtomIsClassifiedAsLiteral)
 {
     FormulaPtr p = MakeAtom("p");
+
     EXPECT_EQ(TableauRules::Classify(p), FormulaClass::LITERAL);
 }
 
@@ -65,7 +68,8 @@ TEST(TableauRulesTests, ConjunctionIsClassifiedAsAlpha)
     FormulaPtr p = MakeAtom("p");
     FormulaPtr q = MakeAtom("q");
     FormulaPtr formula = MakeAnd(p, q);
-    EXPECT_EQ( TableauRules::Classify(formula), FormulaClass::ALPHA);
+
+    EXPECT_EQ(TableauRules::Classify(formula), FormulaClass::ALPHA);
 }
 
 //---------------------------------------------------------------------------------
@@ -73,35 +77,49 @@ TEST(TableauRulesTests, DisjunctionIsClassifiedAsBeta)
 {
     FormulaPtr p = MakeAtom("p");
     FormulaPtr q = MakeAtom("q");
-
     FormulaPtr formula = MakeOr(p, q);
-    EXPECT_EQ(TableauRules::Classify(formula), FormulaClass::BETA );
+
+    EXPECT_EQ(TableauRules::Classify(formula), FormulaClass::BETA);
 }
 
 //---------------------------------------------------------------------------------
 // Alpha expansion tests
-//---------------------------------------------------------------------------------
-TEST(TableauRulesTests, AlphaExpansionAddsBothConjunctsToSameBranch)
+TEST(TableauRulesTests, AlphaExpansionAddsBothConjunctsToSameWorld)
 {
     FormulaPtr p = MakeAtom("p");
     FormulaPtr q = MakeAtom("q");
     FormulaPtr conjunction = MakeAnd(p, q);
+
+    TableauWorld world(0);
+    world.AddFormula(conjunction);
+
+    TableauRules::ExpandAlpha(world, conjunction);
+
+    EXPECT_TRUE(ContainsFormula(world, p));
+    EXPECT_TRUE(ContainsFormula(world, q));
+}
+
+//---------------------------------------------------------------------------------
+TEST(TableauRulesTests, AlphaExpansionDoesNotCreateBranches)
+{
+    FormulaPtr p = MakeAtom("p");
+    FormulaPtr q = MakeAtom("q");
+    FormulaPtr conjunction = MakeAnd(p, q);
+
     TableauNode node(0);
+    node.AddWorld(0);
+    node.AddFormula(0, conjunction);
 
-    node.AddFormula(conjunction);
+    TableauWorld* world = node.FindWorld(0);
+    ASSERT_NE(world, nullptr);
 
-    TableauRules::ExpandAlpha(node, conjunction);
+    TableauRules::ExpandAlpha(*world, conjunction);
 
-    EXPECT_TRUE(ContainsFormula(node, p));
-    EXPECT_TRUE(ContainsFormula(node, q));
-
-    // Alpha expansion must not create additional branches.
     EXPECT_TRUE(node.children.empty());
 }
 
 //---------------------------------------------------------------------------------
 // Beta expansion tests
-//---------------------------------------------------------------------------------
 TEST(TableauRulesTests, BetaExpansionCreatesTwoBranches)
 {
     FormulaPtr p = MakeAtom("p");
@@ -109,15 +127,116 @@ TEST(TableauRulesTests, BetaExpansionCreatesTwoBranches)
     FormulaPtr disjunction = MakeOr(p, q);
 
     TableauNode node(0);
-
-    node.AddFormula(disjunction);
+    node.AddWorld(0);
+    node.AddFormula(0, disjunction);
 
     int nextId = 1;
 
-    TableauRules::ExpandBeta(node, disjunction, nextId);
+    TableauRules::ExpandBeta(node, 0, disjunction, nextId);
 
     ASSERT_EQ(node.children.size(), 2);
 
-    EXPECT_TRUE(node.children[0] != nullptr);
-    EXPECT_TRUE(node.children[1] != nullptr);
+    EXPECT_NE(node.children[0], nullptr);
+    EXPECT_NE(node.children[1], nullptr);
+}
+
+//---------------------------------------------------------------------------------
+TEST(TableauRulesTests, BetaExpansionAddsLeftDisjunctToFirstBranch)
+{
+    FormulaPtr p = MakeAtom("p");
+    FormulaPtr q = MakeAtom("q");
+    FormulaPtr disjunction = MakeOr(p, q);
+
+    TableauNode node(0);
+    node.AddWorld(0);
+    node.AddFormula(0, disjunction);
+
+    int nextId = 1;
+
+    TableauRules::ExpandBeta(node, 0, disjunction, nextId);
+
+    ASSERT_EQ(node.children.size(), 2);
+
+    TableauWorld* leftWorld = node.children[0]->FindWorld(0);
+
+    ASSERT_NE(leftWorld, nullptr);
+    EXPECT_TRUE(ContainsFormula(*leftWorld, p));
+}
+
+//---------------------------------------------------------------------------------
+TEST(TableauRulesTests, BetaExpansionAddsRightDisjunctToSecondBranch)
+{
+    FormulaPtr p = MakeAtom("p");
+    FormulaPtr q = MakeAtom("q");
+    FormulaPtr disjunction = MakeOr(p, q);
+
+    TableauNode node(0);
+    node.AddWorld(0);
+    node.AddFormula(0, disjunction);
+
+    int nextId = 1;
+
+    TableauRules::ExpandBeta(node, 0, disjunction, nextId);
+
+    ASSERT_EQ(node.children.size(), 2);
+
+    TableauWorld* rightWorld = node.children[1]->FindWorld(0);
+
+    ASSERT_NE(rightWorld, nullptr);
+    EXPECT_TRUE(ContainsFormula(*rightWorld, q));
+}
+
+//---------------------------------------------------------------------------------
+TEST(TableauRulesTests, BetaExpansionPreservesExistingWorldFormulas)
+{
+    FormulaPtr p = MakeAtom("p");
+    FormulaPtr q = MakeAtom("q");
+    FormulaPtr r = MakeAtom("r");
+    FormulaPtr disjunction = MakeOr(p, q);
+
+    TableauNode node(0);
+    node.AddWorld(0);
+    node.AddFormula(0, r);
+    node.AddFormula(0, disjunction);
+
+    int nextId = 1;
+
+    TableauRules::ExpandBeta(node, 0, disjunction, nextId);
+
+    ASSERT_EQ(node.children.size(), 2);
+
+    TableauWorld* leftWorld = node.children[0]->FindWorld(0);
+    TableauWorld* rightWorld = node.children[1]->FindWorld(0);
+
+    ASSERT_NE(leftWorld, nullptr);
+    ASSERT_NE(rightWorld, nullptr);
+
+    EXPECT_TRUE(ContainsFormula(*leftWorld, r));
+    EXPECT_TRUE(ContainsFormula(*rightWorld, r));
+}
+
+//---------------------------------------------------------------------------------
+TEST(TableauRulesTests, BetaExpansionAssignsParentAndChildIds)
+{
+    FormulaPtr p = MakeAtom("p");
+    FormulaPtr q = MakeAtom("q");
+    FormulaPtr disjunction = MakeOr(p, q);
+
+    TableauNode node(0);
+    node.AddWorld(0);
+    node.AddFormula(0, disjunction);
+
+    int nextId = 1;
+
+    TableauRules::ExpandBeta(node, 0, disjunction, nextId);
+
+    ASSERT_EQ(node.children.size(), 2);
+
+    EXPECT_EQ(node.children[0]->id, 1);
+    EXPECT_EQ(node.children[1]->id, 2);
+
+    EXPECT_EQ(node.children[0]->parent, &node);
+    EXPECT_EQ(node.children[1]->parent, &node);
+
+    EXPECT_EQ(nextId, 3);
 }

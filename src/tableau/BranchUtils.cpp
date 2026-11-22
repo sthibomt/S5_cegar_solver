@@ -13,9 +13,8 @@ bool BranchUtils::IsWorldClosed(const TableauWorld& world)
 
         if (!formula)
             continue;
-
-        // We only need to check positive atomic formulas.
-        if (formula->type != FormulaType::ATOM)
+        
+        if (formula->type != FormulaType::ATOM)// We only need to check positive atomic formulas.
             continue;
 
         auto atom = std::dynamic_pointer_cast<AtomFormula>(formula);

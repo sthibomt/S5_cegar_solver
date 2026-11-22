@@ -3,6 +3,7 @@
 //---------------------------------------------------------------------------------
 TableauNode::TableauNode(int nodeId): id(nodeId)
 {
+    //
 }
 
 //---------------------------------------------------------------------------------
@@ -10,7 +11,6 @@ void TableauNode::AddWorld(int worldId)
 {    
     if (FindWorld(worldId) != nullptr)// Avoid creating duplicate world identifiers.
         return;
-
     worlds.emplace_back(worldId);
 }
 
@@ -32,6 +32,5 @@ void TableauNode::AddFormula(int worldId, const FormulaPtr& formula)
     TableauWorld* world = FindWorld(worldId);
     if (world == nullptr)
         return;
-
     world->AddFormula(formula);
 }

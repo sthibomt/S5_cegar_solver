@@ -65,8 +65,9 @@ int main(int argc, const char* argv[])
     TableauNode root(0);
     root.AddWorld(0);
     root.AddFormula(0, nnf);
-    int nextId = 1;
-    TableauStatus status = TableauEngine::ExpandBranch(root, nextId);
+    int nextNodeId = 1;
+    int nextWorldId = 1;
+    TableauStatus status = TableauEngine::ExpandBranch(root, nextNodeId, nextWorldId);
 
     std::cout << "\nTableau\n";
     std::cout << "---------------------------\n";

@@ -1,114 +1,123 @@
 #include "TableauEngine.h"
-
-#include "BranchUtils.h"
 #include "TableauRules.h"
+#include "BranchUtils.h"
+#include "../ast/Formula.h"
 
 //---------------------------------------------------------------------------------
-TableauStatus TableauEngine::ExpandBranch(TableauNode& node, int& nextId)
+TableauStatus TableauEngine::ExpandBranch(TableauNode& node, int& nextNodeId, int& nextWorldId)
 {
     while (true)
     {
-        // Check whether the branch contains a contradiction.
+        // Check whether the current branch contains a contradiction.
         if (BranchUtils::IsClosed(node))
         {
             node.closed = true;
             return TableauStatus::CLOSED;
         }
 
-        // Process formulas belonging to each world.
-        for (auto& world : node.worlds)
-        {            
-            FormulaPtr formula = world.GetNextUnexpandedFormula();// Find the next formula that needs expansion.
+        TableauWorld* currentWorld = nullptr;
+        FormulaPtr formula = nullptr;
 
-            if (!formula)
-                continue;
-
-            FormulaClass classification = TableauRules::Classify(formula);
-
-            // Modal rules have not been implemented yet.
-            if (classification == FormulaClass::MODAL || classification == FormulaClass::UNKNOWN)
-            {
-                return TableauStatus::INCOMPLETE;
-            }
-
-            // Mark the formula before expansion.
-            // This ensures child branches inherit its expanded state.
-            world.MarkExpanded(formula);
-
-            switch (classification)
-            {
-                case FormulaClass::LITERAL:
-                    break;
-
-                case FormulaClass::ALPHA:
-                {
-                    // Expand the formula within the current world.
-                    TableauRules::ExpandAlpha(world, formula);
-                    break;
-                }
-
-                case FormulaClass::BETA:
-                {
-                    // Create two child branches.
-                    TableauRules::ExpandBeta(node, world.id, formula, nextId);
-                    
-                    if (node.children.size() != 2)// A beta rule must create two child branches.
-                        return TableauStatus::INCOMPLETE;
-
-                    bool allClosed = true;
-                    bool anyIncomplete = false;
-
-                    // Recursively expand both child branches.
-                    for (const auto& child : node.children)
-                    {
-                        if (!child)
-                        {
-                            anyIncomplete = true;
-                            allClosed = false;
-                            continue;
-                        }
-
-                        TableauStatus childStatus = ExpandBranch(*child, nextId);
-                        if (childStatus != TableauStatus::CLOSED)
-                            allClosed = false;
-
-                        if (childStatus == TableauStatus::INCOMPLETE)
-                            anyIncomplete = true;
-                    }
-
-                    if (allClosed)
-                        return TableauStatus::CLOSED;
-
-                    if (anyIncomplete)
-                        return TableauStatus::INCOMPLETE;
-
-                    // At least one branch remains open.
-                    return TableauStatus::OPEN;
-                }
-
-                case FormulaClass::MODAL:
-                case FormulaClass::UNKNOWN:
-                    return TableauStatus::INCOMPLETE;
-            }
-
-            // A formula was processed. Restart the search because
-            // expansion may have added new formulas to this world.
-            break;
-        }
-
-        // Check whether any world still has unexpanded formulas.
-        bool hasUnexpandedFormula = false;
+        // Find the next unexpanded formula across all worlds.
         for (auto& world : node.worlds)
         {
-            if (world.TableauWorld::GetNextUnexpandedFormula())
+            formula = world.GetNextUnexpandedFormula();
+
+            if (formula)
             {
-                hasUnexpandedFormula = true;
+                currentWorld = &world;
                 break;
             }
         }
-
-        // All formulas in all worlds have been processed.
-        if (!hasUnexpandedFormula)
+        
+        if (formula == nullptr)// No unexpanded formulas remain.
             return TableauStatus::OPEN;
+
+        // Mark the formula before applying its rule.This prevents it from being expanded repeatedly.
+        currentWorld->MarkExpanded(formula);
+
+        FormulaClass classification = TableauRules::Classify(formula);
+
+        switch (classification)
+        {
+            // -------------------------------------------------------------
+            case FormulaClass::LITERAL:
+            {
+                // Nothing further needs to be added.
+                // Contradictions are detected at the beginning
+                // of the next iteration.
+                break;
+            }
+
+            // -------------------------------------------------------------
+            case FormulaClass::ALPHA:
+            {
+                TableauRules::ExpandAlpha(*currentWorld, formula);
+                break;
+            }
+
+            // -------------------------------------------------------------
+            case FormulaClass::BETA:
+            {                
+                TableauRules::ExpandBeta(node, currentWorld->id, formula, nextNodeId);// Split the current branch into two alternatives.
+                
+                if (node.children.size() < 2)// A successful beta expansion must create two children.
+                    return TableauStatus::INCOMPLETE;
+
+                // Expand the left child recursively.
+                TableauStatus leftStatus = ExpandBranch(*node.children[node.children.size() - 2], nextNodeId, nextWorldId);
+
+                // Expand the right child recursively.
+                TableauStatus rightStatus = ExpandBranch(*node.children[node.children.size() - 1], nextNodeId, nextWorldId);
+
+                // The parent branch closes only when both
+                // alternative branches are closed.
+                if (leftStatus == TableauStatus::CLOSED && rightStatus == TableauStatus::CLOSED)
+                {
+                    node.closed = true;
+                    return TableauStatus::CLOSED;
+                }
+
+                // At least one open child means the tableau
+                // has an open alternative.
+                if (leftStatus == TableauStatus::OPEN || rightStatus == TableauStatus::OPEN)
+                {
+                    return TableauStatus::OPEN;
+                }
+
+                // Neither child is open, but at least one could not be fully evaluated.
+                return TableauStatus::INCOMPLETE;
+            }
+
+            // -------------------------------------------------------------
+            case FormulaClass::MODAL:
+            {
+                if (formula->type == FormulaType::BOX)
+                {
+                    TableauRules::ExpandBox(node, formula);
+                }
+                else if (formula->type == FormulaType::DIAMOND)
+                {
+                    TableauRules::ExpandDiamond(node, formula, nextWorldId);
+                }
+                else
+                {
+                    return TableauStatus::INCOMPLETE;
+                }
+
+                break;
+            }
+
+            // -------------------------------------------------------------
+            case FormulaClass::UNKNOWN:
+            default:
+            {
+                return TableauStatus::INCOMPLETE;
+            }
+        }
+
+        // Start another iteration.
+        // This is important because alpha and modal expansion
+        // may have added formulas or new worlds to the branch.
     }
 }

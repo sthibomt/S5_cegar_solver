@@ -1,6 +1,7 @@
 #pragma once
 
 #include "TableauNode.h"
+// #include "TableauRules.h"
 
 //---------------------------------------------------------------------------------
 enum class TableauStatus
@@ -12,5 +13,5 @@ enum class TableauStatus
 class TableauEngine
 {
     public:       
-    static TableauStatus ExpandBranch(TableauNode& node, int& nextId);
+        static TableauStatus ExpandBranch(TableauNode& node, int& nextNodeId, int& nextWorldId);
 };

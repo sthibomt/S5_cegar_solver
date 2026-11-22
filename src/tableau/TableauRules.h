@@ -10,10 +10,12 @@ enum class FormulaClass
 };
 
 //---------------------------------------------------------------------------------
-class TableauRules
+class TableauRules  
 {
 public:
     static FormulaClass Classify(const FormulaPtr& formula);
     static void ExpandAlpha(TableauWorld& world, const FormulaPtr& formula);
     static void ExpandBeta(TableauNode& node, int worldId, const FormulaPtr& formula, int& nextId);
+    static void ExpandBox(TableauNode& node, const FormulaPtr& formula);
+    static void ExpandDiamond(TableauNode& node, const FormulaPtr& formula, int& nextWorldId);
 };

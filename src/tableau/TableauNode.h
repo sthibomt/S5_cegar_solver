@@ -9,7 +9,7 @@ class TableauNode;
 
 using NodePtr = std::shared_ptr<TableauNode>;
 
-//------------------------------------------------------------
+//---------------------------------------------------------------------------------
 class TableauNode
 {
 public:    

@@ -102,12 +102,9 @@ void TableauRules::ExpandBeta(TableauNode& node, int worldId, const FormulaPtr& 
     // Copy all existing worlds and their formulas into both branches.
     left->worlds = node.worlds;
     right->worlds = node.worlds;
-
-    // Left branch: A
-    left->AddFormula(worldId, binary->left);
-
-    // Right branch: B
-    right->AddFormula(worldId, binary->right);
+    
+    left->AddFormula(worldId, binary->left); // Left branch: A    
+    right->AddFormula(worldId, binary->right); // Right branch: B
 
     // Attach the new branches to the current node.
     node.children.push_back(left);
@@ -171,6 +168,5 @@ void TableauRules::ExpandDiamond(TableauNode& node, const FormulaPtr& formula, i
                 witnessWorld->AddFormula(box->child);
         }
     }
-
     ++nextWorldId;
 }

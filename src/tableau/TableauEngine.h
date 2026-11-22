@@ -1,7 +1,6 @@
 #pragma once
 
 #include "TableauNode.h"
-// #include "TableauRules.h"
 
 //---------------------------------------------------------------------------------
 enum class TableauStatus

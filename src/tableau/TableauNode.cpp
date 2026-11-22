@@ -27,6 +27,17 @@ TableauWorld* TableauNode::FindWorld(int worldId)
 }
 
 //---------------------------------------------------------------------------------
+const TableauWorld* TableauNode::FindWorld(int worldId) const
+{
+    for (const auto& world : worlds)
+    {
+        if (world.id == worldId)
+            return &world;
+    }
+
+    return nullptr;
+}
+//---------------------------------------------------------------------------------
 void TableauNode::AddFormula(int worldId, const FormulaPtr& formula)
 {
     TableauWorld* world = FindWorld(worldId);

@@ -1,63 +1,88 @@
-#include <iostream>
-
 #include "TableauPrinter.h"
+
 #include "../logic/FormulaUtils.h"
 
+#include <iostream>
+#include <ostream>
+
 //---------------------------------------------------------------------------------
-// Print a tableau node and its worlds.
-void PrintNode(const TableauNode& node, int depth)
-{    
-    std::string indent(depth * 4, ' '); // Indentation
-    std::cout << indent << "Node " << node.id;
+void TableauPrinter::PrintIndent(std::ostream& output, int depth)
+{
+    for (int i = 0; i < depth; ++i)
+        output << "    ";
+}
+
+//---------------------------------------------------------------------------------
+// Print a tableau node and all its descendants.
+void TableauPrinter::PrintNode(const TableauNode& node, int depth)
+{
+    PrintNode(node, std::cout, depth);
+}
+
+//---------------------------------------------------------------------------------
+// Stream-based overloads, useful for testing and file output.
+void TableauPrinter::PrintNode(const TableauNode& node, std::ostream& output, int depth)
+{
+    PrintIndent(output, depth);
+    output << "Tableau Node " << node.id;
 
     if (node.closed)
-    {
-        std::cout << " (closed)";
-    }
+        output << " [CLOSED]";
+    else
+        output << " [NOT CLOSED]";
 
-    std::cout << '\n';
-    std::cout << indent << "---------------------------\n";
-
-    // Print all worlds belonging to this node.
-    for (const auto& world : node.worlds)
-    {
-        std::cout << indent << "  World " << world.id << '\n';
-
-        std::cout << indent << "---------------------------\n";
-
-        // Print formulas belonging to this world.
-        for (const auto& entry : world.formulaEntries)
-        {
-            std::cout << indent << "    ";
-
-            if (entry.expanded)
-            {
-                std::cout << "[x] ";
-            }
-            else
-            {
-                std::cout << "[ ] ";
-            }
-
-            std::cout << FormulaToString(entry.formula) << '\n';
-        }
-
-        std::cout << '\n';
-    }
-
-    // Recursively print child branches.
-    for (const auto& child : node.children)
+    output << '\n';
+    
+    PrintBranch(node, output); // Print the worlds belonging to this node.    
+    for (const auto& child : node.children) // Recursively print child nodes.
     {
         if (child)
         {
-            PrintNode(*child, depth + 1);
+            output << '\n';
+            PrintNode(*child, output, depth + 1);
         }
     }
 }
 
 //---------------------------------------------------------------------------------
-// Print the entire tableau.
-void PrintBranch(const TableauNode& node)
+// Print the worlds and formulas belonging to one branch.
+void TableauPrinter::PrintBranch(const TableauNode& node)
 {
-    PrintNode(node, 0);
+    PrintBranch(node, std::cout);
+}
+
+//---------------------------------------------------------------------------------
+void TableauPrinter::PrintBranch(const TableauNode& node, std::ostream& output)
+{
+    if (node.worlds.empty())
+    {
+        output << "    No worlds in this branch.\n";
+        return;
+    }
+
+    for (const auto& world : node.worlds)
+    {
+        output << "    World " << world.id << ":\n";
+        if (world.formulaEntries.empty())
+        {
+            output << "        No formulas.\n";
+            continue;
+        }
+
+        for (const auto& entry : world.formulaEntries)
+        {
+            output << "        ";
+
+            if (entry.formula)
+                output << FormulaToString(entry.formula);
+            else
+                output << "<null formula>";
+
+            output << (entry.expanded
+                ? " [expanded]"
+                : " [not expanded]");
+
+            output << '\n';
+        }
+    }
 }

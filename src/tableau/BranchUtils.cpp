@@ -30,7 +30,6 @@ bool BranchUtils::IsWorldClosed(const TableauWorld& world)
 }
 
 //---------------------------------------------------------------------------------
-// Check whether a tableau branch is closed.
 bool BranchUtils::IsClosed(const TableauNode& node)
 {
     for (const auto& world : node.worlds)
@@ -43,7 +42,6 @@ bool BranchUtils::IsClosed(const TableauNode& node)
 }
 
 //---------------------------------------------------------------------------------
-// Check whether the entire tableau is closed.
 bool BranchUtils::IsTableauClosed(const TableauNode& node)
 {
     // A leaf branch is closed if it contains a closed world.
@@ -75,12 +73,10 @@ bool BranchUtils::ContainsNegation(const TableauWorld& world, const std::string&
 
         if (!notFormula || !notFormula->child)
             continue;
-
         if (notFormula->child->type != FormulaType::ATOM)
             continue;
 
-        auto atom =
-            std::dynamic_pointer_cast<AtomFormula>(notFormula->child);
+        auto atom = std::dynamic_pointer_cast<AtomFormula>(notFormula->child);
 
         if (atom && atom->name == atomName)
             return true;

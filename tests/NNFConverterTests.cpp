@@ -24,13 +24,10 @@ TEST_F(NNFConverterTest, AtomRemainsUnchanged)
 }
 
 //---------------------------------------------------------------------------------
-
 TEST_F(NNFConverterTest, DoubleNegationIsEliminated)
 {
     FormulaPtr atom = MakeAtom("p");
-
     FormulaPtr formula = std::make_shared<UnaryFormula>(FormulaType::NOT, std::make_shared<UnaryFormula>(FormulaType::NOT, atom ));
-
     FormulaPtr result = FormulaNormalizer::Convert(formula);
 
     ASSERT_NE(result, nullptr);

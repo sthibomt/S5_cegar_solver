@@ -31,9 +31,7 @@ static FormulaPtr MakeOr(const FormulaPtr& left, const FormulaPtr& right)
 }
 
 //---------------------------------------------------------------------------------
-static bool ContainsFormula(
-    const TableauWorld& world,
-    const FormulaPtr& formula)
+static bool ContainsFormula(const TableauWorld& world, const FormulaPtr& formula)
 {
     for (const auto& entry : world.formulaEntries)
     {

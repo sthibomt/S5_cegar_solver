@@ -20,7 +20,7 @@
 
 using namespace antlr4;
 
-//------------------------------------------------------------
+//---------------------------------------------------------------------------------
 int main(int argc, const char* argv[])
 {
     std::string input;
@@ -46,8 +46,7 @@ int main(int argc, const char* argv[])
     std::cout << "Type      : " << result.type().name() << "\n\n";
 
     FormulaPtr ast = std::any_cast<FormulaPtr>(result);
-
-    // Convert the original formula to NNF.
+    
     FormulaPtr nnf = FormulaNormalizer::Convert(ast);
     
     // Formula utilities    
@@ -71,9 +70,12 @@ int main(int argc, const char* argv[])
 
     std::cout << "\nTableau\n";
     std::cout << "---------------------------\n";
-    PrintBranch(root);
+    TableauPrinter::PrintNode(root);    
     
-    // Branch status        
+    // Branch status
+    std::cout << "\nResult\n";                  
+    std::cout << "---------------------------\n";    
+
      switch (status)
       {
         case TableauStatus::CLOSED:

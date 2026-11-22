@@ -13,7 +13,6 @@ public:
     static bool IsClosed(const TableauNode& node); // Checks whether the tableau branch is closed.    
     static bool IsTableauClosed(const TableauNode& node);
 
-private:
-    // Checks whether the world contains both an atom and its negation.
+private:    
     static bool ContainsNegation(const TableauWorld& world, const std::string& atomName);
 };
